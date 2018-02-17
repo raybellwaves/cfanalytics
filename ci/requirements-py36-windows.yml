@@ -1,0 +1,11 @@
+name: test_env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.6
+  - requests
+  - aiohttp
+  - pandas
+  - pip:
+    - coveralls
+    - pytest-cov
