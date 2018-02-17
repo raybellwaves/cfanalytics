@@ -1,0 +1,1 @@
+from .core.cfopendata import Cfopendata
