@@ -1,13 +1,9 @@
 # CI on Windows via appveyor
 # This file was based on Olivier Grisel's python-appveyor-demo
-branches:
-  except:
-    - fix-docs
-
 environment:
-    - PYTHON: "C:\\Python36-conda64"
-      PYTHON_VERSION: "3.6"
-      PYTHON_ARCH: "64"
+  - PYTHON: "C:\\Python36-conda64"
+    PYTHON_VERSION: "3.6"
+    PYTHON_ARCH: "64"
 
 install:
   # Install miniconda Python
@@ -23,7 +19,6 @@ install:
   - "activate test_env"
   - "conda list"
   - "python setup.py install"
-  - "python xarray/util/print_versions.py"
 
 build: false
 
