@@ -21,7 +21,7 @@ class TestCfopendata(TestCase):
                '2 Safari/537.36'}
 
     def test_get_page(self):
-        expected = 4921
+        expected = 4291
         response = requests.get(self.basepath,
                                 params={"division": self.division,
                                         "scaled": self.scaled,
