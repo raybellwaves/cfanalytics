@@ -1,3 +1,4 @@
+import pytest
 import requests # HTTP library
 
 from cfanalytics.tests import TestCase
@@ -19,7 +20,7 @@ class TestCfopendata(TestCase):
                ') AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.13'+\
                '2 Safari/537.36'}
 
-    def get_page(self):
+    def test_get_page(self):
         expected = 4921
         response = requests.get(self.basepath,
                                 params={"division": self.division,
