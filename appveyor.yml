@@ -1,9 +1,11 @@
 # CI on Windows via appveyor
 # This file was based on Olivier Grisel's python-appveyor-demo
 environment:
-  - PYTHON: "C:\\Python36-conda64"
-    PYTHON_VERSION: "3.6"
-    PYTHON_ARCH: "64"
+
+  matrix:
+    - PYTHON: "C:\\Python36-conda64"
+      PYTHON_VERSION: "3.6"
+      PYTHON_ARCH: "64"
 
 install:
   # Install miniconda Python
@@ -23,4 +25,4 @@ install:
 build: false
 
 test_script:
-  - "py.test xarray --verbose"
+  - "py.test cfanalytics --verbose"
