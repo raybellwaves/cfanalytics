@@ -26,4 +26,4 @@ install:
   - python setup.py install
   
 script:
-  - py.test cfanalytics --cov=cfanalytics
+  - py.test cfanalytics
