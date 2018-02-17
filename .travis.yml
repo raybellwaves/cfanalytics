@@ -21,6 +21,7 @@ install:
   - source activate test_env
   - conda list
   - pip install --no-deps -e .
+  - conda install conda-build
   - conda build cfanalytics
   - conda install your-package --use-local
   
