@@ -8,4 +8,5 @@ setup(name='cfanalytics',
       description='Downloading, analyzing and visualizing CrossFit data',
       url='https://github.com/raybellwaves/cfanalytics',
       packages=find_packages(),
-      install_requires=['requests', 'aiohttp', 'pandas'])
+      install_requires=['requests', 'aiohttp', 'pandas'],
+      python_requires='>=3.6')
