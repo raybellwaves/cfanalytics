@@ -7,3 +7,5 @@ cfanalytics: ...
    :target: https://ci.appveyor.com/project/raybellwaves/cfanalytics
 .. image:: https://coveralls.io/repos/github/raybellwaves/cfanalytics/badge.svg?branch=master
    :target: https://coveralls.io/github/raybellwaves/cfanalytics?branch=master
+.. image:: https://img.shields.io/pypi/v/cfanalytics.svg
+   :target: https://pypi.python.org/pypi/cfanalytics/
