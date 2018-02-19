@@ -18,14 +18,14 @@ Installing
 
 ``conda install cfanalytics``
 
-As a precautionary note it has been developed entirely on Mac OSX. Therefore, use in windows and Linux at your 
+As a precautionary note it has been developed entirely on Mac OSX using Python installed with `anaconda <https://anaconda.org/anaconda/python>`__. Therefore, use in windows and Linux at your 
 own peril.
 
 Examples
 --------
 
 
-acknowledgements
+Acknowledgements
 ----------------
 
 Thanks to posts on `r/crossfit <https://www.reddit.com/r/crossfit/>`__. e.g. `here <https://www.reddit.com/r/crossfit/comments/5uikq8/2017_open_data_analysis/>`__. I worked out 
