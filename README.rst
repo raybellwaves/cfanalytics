@@ -16,7 +16,7 @@ CrossFit® workouts. The goal is enhance data-driven performance of athletes.
 Installing
 ----------
 
-``conda install cfanalytics``
+``conda install -c conda-forge cfanalytics``
 
 As a precautionary note it has been developed entirely on Mac OSX using Python installed with `anaconda <https://anaconda.org/anaconda/python>`__. Therefore, use in windows and Linux at your 
 own peril.
@@ -24,13 +24,14 @@ own peril.
 Examples
 --------
 
+...
 
 Acknowledgements
 ----------------
 
-Thanks to posts on `r/crossfit <https://www.reddit.com/r/crossfit/>`__. e.g. `here <https://www.reddit.com/r/crossfit/comments/5uikq8/2017_open_data_analysis/>`__. I worked out 
+- Thanks to posts on `r/crossfit <https://www.reddit.com/r/crossfit/>`__. e.g. `here <https://www.reddit.com/r/crossfit/comments/5uikq8/2017_open_data_analysis/>`__. I worked out 
 how to download data from the `CrossFit® open <https://games.crossfit.com/leaderboard/open/2017?division=1&region=0&scaled=0&sort=0&occupation=0&page=1>`__.
-`cfopendata` is a very minor adaption from `captamericadevs/CFOpenData <https://github.com/captamericadevs/CFOpenData>`__ 
+- ``cfopendata`` is a very minor adaption from `captamericadevs/CFOpenData <https://github.com/captamericadevs/CFOpenData>`__ 
 who smartly developed code to download CrossFit® open data using 'aiohttp <https://github.com/aio-libs/aiohttp>`__.
 
 
