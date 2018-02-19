@@ -1,5 +1,5 @@
-cfanalytics: ...
-=======================================
+cfanalytics: Downloading, analyzing and visualizing CrossFit data
+=================================================================
 
 .. image:: https://travis-ci.org/raybellwaves/cfanalytics.svg?branch=master
    :target: https://travis-ci.org/raybellwaves/cfanalytics
