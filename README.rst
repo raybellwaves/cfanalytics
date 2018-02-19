@@ -30,8 +30,7 @@ Acknowledgements
 ----------------
 
 - Thanks to posts on `r/crossfit <https://www.reddit.com/r/crossfit/>`__. e.g. `here <https://www.reddit.com/r/crossfit/comments/5uikq8/2017_open_data_analysis/>`__. I worked out how to download data from the `CrossFit® open <https://games.crossfit.com/leaderboard/open/2017?division=1&region=0&scaled=0&sort=0&occupation=0&page=1>`__. 
-- ``cfopendata`` is a very minor adaption from `captamericadevs/CFOpenData <https://github.com/captamericadevs/CFOpenData>`__ 
-who smartly developed code to download CrossFit® open data using 'aiohttp <https://github.com/aio-libs/aiohttp>`__. 
+- ``cfopendata`` is a very minor adaption from `captamericadevs/CFOpenData <https://github.com/captamericadevs/CFOpenData>`__. Who smartly developed code to download CrossFit® open data using `aiohttp <https://github.com/aio-libs/aiohttp>`__. 
 
 Documentation
 -------------
