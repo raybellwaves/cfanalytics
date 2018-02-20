@@ -163,8 +163,8 @@
 <span class="kn">from</span> <span class="nn">cfanalytics.tests</span> <span class="k">import</span> <span class="n">TestCase</span>
 
 
-<div class="viewcode-block" id="TestCfopendata"><a class="viewcode-back" href="../../../cfanalytics.tests.html#cfanalytics.tests.test_cfopendata.TestCfopendata">[docs]</a><span class="k">class</span> <span class="nc">TestCfopendata</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>    
-<div class="viewcode-block" id="TestCfopendata.setUp"><a class="viewcode-back" href="../../../cfanalytics.tests.html#cfanalytics.tests.test_cfopendata.TestCfopendata.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCfopendata"><a class="viewcode-back" href="../../../source/cfanalytics.tests.html#cfanalytics.tests.test_cfopendata.TestCfopendata">[docs]</a><span class="k">class</span> <span class="nc">TestCfopendata</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>    
+<div class="viewcode-block" id="TestCfopendata.setUp"><a class="viewcode-back" href="../../../source/cfanalytics.tests.html#cfanalytics.tests.test_cfopendata.TestCfopendata.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="mi">2017</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">division</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scaled</span> <span class="o">=</span> <span class="mi">0</span>
@@ -179,7 +179,7 @@
                <span class="s1">&#39;) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.13&#39;</span><span class="o">+</span>\
                <span class="s1">&#39;2 Safari/537.36&#39;</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="TestCfopendata.test_get_page"><a class="viewcode-back" href="../../../cfanalytics.tests.html#cfanalytics.tests.test_cfopendata.TestCfopendata.test_get_page">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCfopendata.test_get_page"><a class="viewcode-back" href="../../../source/cfanalytics.tests.html#cfanalytics.tests.test_cfopendata.TestCfopendata.test_get_page">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">expected</span> <span class="o">=</span> <span class="mi">4291</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basepath</span><span class="p">,</span>
                                 <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;division&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">division</span><span class="p">,</span>

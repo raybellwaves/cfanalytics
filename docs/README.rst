@@ -13,8 +13,9 @@ Install:
     $ cd docs
     $ sphinx-quickstart
     $ make html # This will generate an index.rst and a conf.py
+    $ sphinx-apidoc -o source/ ../cfanalytics
     $ sphinx-autobuild . _build/html # To update
-    # $ sphinx-apidoc -o docs cfanalytics #? 
+    
 
 Push changes.
 

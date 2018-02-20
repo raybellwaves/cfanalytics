@@ -10,7 +10,6 @@ Contents
    whats_new
 
 
-
 Indices and tables
 ==================
 
