@@ -22,9 +22,11 @@ As a precautionary note it has been developed entirely on Mac OSX using Python i
 own peril.
 
 As good practice I recommend installing in a new enviroment:
-``conda create -n cfa python=3.6
-source activate cfa
-conda install -c conda-forge cfanalytics``
+.. code-block:: python
+
+    $conda create -n cfa python=3.6
+    $source activate cfa
+    $conda install -c conda-forge cfanalytics``
 
 You can type ``source deactivate`` when finished. You can also check which environments you have created by typing ``conda info --envs``. 
 To remove an environment type ``conda remove --name cfa --all``.
