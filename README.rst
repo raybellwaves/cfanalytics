@@ -23,6 +23,8 @@ own peril.
 
 As good practice I recommend installing in a new enviroment:
 
+.. parsed-literal:: 
+ 
     $conda create -n cfa python=3.6
     $source activate cfa
     $conda install -c conda-forge cfanalytics
