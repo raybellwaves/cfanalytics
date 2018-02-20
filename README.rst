@@ -18,8 +18,16 @@ Installing
 
 ``conda install -c conda-forge cfanalytics``
 
-As a precautionary note it has been developed entirely on Mac OSX using Python installed with `anaconda <https://anaconda.org/anaconda/python>`__. Therefore, use in windows and Linux at your 
+As a precautionary note it has been developed entirely on Mac OSX using Python installed with `anaconda <https://anaconda.org/anaconda/python>`__. Therefore, use in Windows and Linux at your 
 own peril.
+
+As good practice I recommend installing in a new enviroment:
+``conda create -n cfa python=3.6
+source activate cfa
+conda install -c conda-forge cfanalytics``
+
+You can type ``source deactivate`` when finished. You can also check which environments you have created by typing ``conda info --envs``. 
+To remove an environment type ``conda remove --name cfa --all``.
 
 Examples
 --------
@@ -30,7 +38,7 @@ Acknowledgements
 ----------------
 
 - Thanks to posts on `r/crossfit <https://www.reddit.com/r/crossfit/>`__. e.g. `here <https://www.reddit.com/r/crossfit/comments/5uikq8/2017_open_data_analysis/>`__. I worked out how to download data from the `CrossFit® open <https://games.crossfit.com/leaderboard/open/2017?division=1&region=0&scaled=0&sort=0&occupation=0&page=1>`__. 
-- ``cfopendata`` is a very minor adaption from `captamericadevs/CFOpenData <https://github.com/captamericadevs/CFOpenData>`__. Who smartly developed code to download CrossFit® open data using `aiohttp <https://github.com/aio-libs/aiohttp>`__. 
+- ``cfopendata`` is a very minor adaptation from `captamericadevs/CFOpenData <https://github.com/captamericadevs/CFOpenData>`__. Who smartly developed code to download CrossFit® open data using `aiohttp <https://github.com/aio-libs/aiohttp>`__. 
 
 Documentation
 -------------
@@ -40,5 +48,5 @@ The documentation is hosted at http://cfanalytics.readthedocs.io/
 Disclaimer
 ----------
 
-This project is not affliated with CrossFit, Inc.
+This project is not affiliated with CrossFit, Inc.
 

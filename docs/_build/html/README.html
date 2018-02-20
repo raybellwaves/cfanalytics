@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cfanalytics: Downloading, analyzing and visualizing CrossFit data &mdash; cfanalytics 0.1.4 documentation</title>
+  <title>&lt;no title&gt; &mdash; cfanalytics 0.1.4 documentation</title>
   
 
   
@@ -35,8 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="cfanalytics 0.1.4 documentation" href="#"/>
-        <link rel="next" title="What’s New" href="whats_new.html"/> 
+    <link rel="top" title="cfanalytics 0.1.4 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -55,7 +54,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> cfanalytics
+            <a href="index.html" class="icon icon-home"> cfanalytics
           
 
           
@@ -105,7 +104,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">cfanalytics</a>
+          <a href="index.html">cfanalytics</a>
         
       </nav>
 
@@ -133,15 +132,15 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>cfanalytics: Downloading, analyzing and visualizing CrossFit data</li>
+      <li>&lt;no title&gt;</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/README.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -154,28 +153,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="cfanalytics-downloading-analyzing-and-visualizing-crossfit-data">
-<h1>cfanalytics: Downloading, analyzing and visualizing CrossFit data<a class="headerlink" href="#cfanalytics-downloading-analyzing-and-visualizing-crossfit-data" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="contents">
-<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="whats_new.html">What’s New</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="whats_new.html#v0-1-4-18-february-2018">v0.1.4 (18 February 2018)</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
-</ul>
-</div>
+  <p>Notes on generating the docs.</p>
+<p>Install:
+<code class="docutils literal"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">anaconda</span> <span class="pre">sphinx</span></code>
+<code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">sphinx-autouild</span></code> as of 2/19/18 this can’t be installed using <code class="docutils literal"><span class="pre">conda</span></code> (see <a class="reference external" href="https://github.com/conda-forge/sphinx-autobuild-feedstock/issues/3">https://github.com/conda-forge/sphinx-autobuild-feedstock/issues/3</a>)
+<code class="docutils literal"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">anaconda</span> <span class="pre">sphinx_rtd_theme</span></code>
+<code class="docutils literal"><span class="pre">mkdir</span> <span class="pre">docs</span></code>
+<code class="docutils literal"><span class="pre">cd</span> <span class="pre">docs</span></code>
+<code class="docutils literal"><span class="pre">sphinx-quickstart</span></code>
+<code class="docutils literal"><span class="pre">make</span> <span class="pre">html</span></code> will generate a <code class="docutils literal"><span class="pre">index.rst</span></code> and a <code class="docutils literal"><span class="pre">conf.py</span></code>
+<code class="docutils literal"><span class="pre">sphinx-apidoc</span> <span class="pre">-o</span> <span class="pre">docs</span> <span class="pre">cfanalytics</span></code></p>
+<p>Push changes.</p>
+<p>Sign up for readthedocs and import your package.</p>
 
 
            </div>
@@ -184,13 +173,6 @@
            </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="whats_new.html" class="btn btn-neutral float-right" title="What’s New" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-    </div>
   
 
   <hr/>
