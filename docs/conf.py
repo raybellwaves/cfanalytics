@@ -122,6 +122,11 @@ html_sidebars = {
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'cfanalyticsdoc'
 
+# on_rtd is whether we are on readthedocs.org, this line of code grabbed from
+# docs.readthedocs.org
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+
 
 # -- Options for LaTeX output ---------------------------------------------
 
