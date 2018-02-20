@@ -1,0 +1,496 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cfanalytics.core.cfopendata &mdash; cfanalytics 0.1.4 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="cfanalytics 0.1.4 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> cfanalytics
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats_new.html">What’s New</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">cfanalytics</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>cfanalytics.core.cfopendata</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cfanalytics.core.cfopendata</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">requests</span> <span class="c1"># HTTP library</span>
+<span class="kn">import</span> <span class="nn">asyncio</span> <span class="c1"># Asynchronous I/O</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">ClientSession</span> <span class="c1"># Asynchronous HTTP Client/Server</span>
+
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="Cfopendata"><a class="viewcode-back" href="../../../cfanalytics.core.html#cfanalytics.core.cfopendata.Cfopendata">[docs]</a><span class="k">class</span> <span class="nc">Cfopendata</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An object to download CrossFit open data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">scaled</span><span class="p">,</span> <span class="n">batchpages</span><span class="p">,</span> <span class="n">ddir</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Crossfit open data object.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        year : int</span>
+<span class="sd">            Year to download crossfit data e.g. 2017.</span>
+<span class="sd">        division : int (1-17)</span>
+<span class="sd">            Numerical values of the division.</span>
+<span class="sd">            1 : Men</span>
+<span class="sd">            2 : Women</span>
+<span class="sd">        scaled : int (0,1)</span>
+<span class="sd">            Numerical values if workout was Scaled or RX&#39;d.</span>
+<span class="sd">            0 : Rx</span>
+<span class="sd">            1 : Sc</span>
+<span class="sd">        ddir : str</span>
+<span class="sd">            Directory where to save data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        cfopendata : pd.Dataframe</span>
+<span class="sd">            Crossfit open data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">year</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">division</span> <span class="o">=</span> <span class="n">division</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scaled</span> <span class="o">=</span> <span class="n">scaled</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batchpages</span> <span class="o">=</span> <span class="n">batchpages</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ddir</span> <span class="o">=</span> <span class="n">ddir</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">basepath</span> <span class="o">=</span> <span class="s1">&#39;https://games.crossfit.com/competitions/api/v1/comp&#39;</span><span class="o">+</span>\
+                        <span class="s1">&#39;etitions/open/&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;/leaderboards?&#39;</span>
+                        
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Host&#39;</span><span class="p">:</span> <span class="s1">&#39;games.crossfit.com&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2&#39;</span><span class="o">+</span>\
+               <span class="s1">&#39;) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.13&#39;</span><span class="o">+</span>\
+               <span class="s1">&#39;2 Safari/537.36&#39;</span><span class="p">}</span>
+                        
+        <span class="c1"># Setup DataFrame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Userid&#39;</span><span class="p">,</span> <span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="s1">&#39;Weight&#39;</span><span class="p">,</span> <span class="s1">&#39;Age&#39;</span><span class="p">,</span> <span class="s1">&#39;Regionid&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;Regionname&#39;</span><span class="p">,</span> <span class="s1">&#39;Affiliateid&#39;</span><span class="p">,</span> <span class="s1">&#39;Overallrank&#39;</span><span class="p">,</span> <span class="s1">&#39;Overallscore&#39;</span><span class="p">,</span> 
+                   <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">+</span><span class="s1">&#39;.1_rank&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">+</span><span class="s1">&#39;.1_score&#39;</span><span class="p">,</span>
+                   <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">+</span><span class="s1">&#39;.2_rank&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">+</span><span class="s1">&#39;.2_score&#39;</span><span class="p">,</span>
+                   <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">+</span><span class="s1">&#39;.3_rank&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">+</span><span class="s1">&#39;.3_score&#39;</span><span class="p">,</span>
+                   <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">+</span><span class="s1">&#39;.4_rank&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">+</span><span class="s1">&#39;.4_score&#39;</span><span class="p">,</span>
+                   <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">+</span><span class="s1">&#39;.5_rank&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">+</span><span class="s1">&#39;.5_score&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        
+        <span class="c1"># Find out how pages of results there are</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_npages</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchpages</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">npages</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;batchpages must be less than number of pages.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of pages for year: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span>\
+                             <span class="s1">&#39;division: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">division</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, scaled: &#39;</span><span class="o">+</span>\
+                             <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scaled</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;is &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">npages</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;. &#39;</span><span class="o">+</span>\
+                             <span class="s1">&#39;bactchpages is &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batchpages</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Loop over the batch pages</span>
+        <span class="n">ii</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startpage</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">ii</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">npages</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">batchpages</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ailoop</span><span class="p">()</span>
+            <span class="n">ii</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">startpage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">startpage</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchpages</span>
+        <span class="c1"># Check if any pages left</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">startpage</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">npages</span><span class="p">:</span>
+            <span class="c1"># Update batchpages to however many pages are left</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batchpages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">npages</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchpages</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ailoop</span><span class="p">()</span>
+
+        <span class="c1"># Save data            </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_div_to_name</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_scaled_to_name</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span>\
+                     <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;_raw&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_pickle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ddir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">path_or_buf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ddir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dname</span><span class="o">+</span><span class="s1">&#39;.csv&#39;</span><span class="p">)</span>
+        
+        
+    <span class="k">def</span> <span class="nf">_get_npages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the number of pages of results.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        npages : int</span>
+<span class="sd">           Number of pages.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basepath</span><span class="p">,</span>
+                                <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;division&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">division</span><span class="p">,</span>
+                                        <span class="s2">&quot;scaled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaled</span><span class="p">,</span>
+                                        <span class="s2">&quot;sort&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;fittest&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;fittest1&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;occupation&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;competition&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                                        <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;totalpages&#39;</span><span class="p">]</span>
+    
+
+    <span class="k">def</span> <span class="nf">_ailoop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a concurrent loop.</span>
+<span class="sd">        </span>
+<span class="sd">           See https://www.blog.pythonlibrar\y.org/2016/07/26/python-3-an-intro\</span>
+<span class="sd">           -to-asyncio/</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">aioloop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+        <span class="n">aifuture</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop_pages</span><span class="p">())</span>
+        <span class="n">aioloop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">aifuture</span><span class="p">)</span>        
+        
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_loop_pages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;async function that creates semaphores and does http requests</span>
+<span class="sd">        by a segmented number of pages.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Calls ._download_page()</span>
+<span class="sd">        Calls ._get_data()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">async_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">sem</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batchpages</span><span class="p">)</span> <span class="c1"># create asyncio.locks.Semaph\</span>
+        <span class="c1">#ore object</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span> 
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">startpage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">startpage</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">batchpages</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;division&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">division</span><span class="p">,</span>
+                             <span class="s2">&quot;scaled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaled</span><span class="p">,</span>
+                             <span class="s2">&quot;sort&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;fittest&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;fittest1&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;occupation&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;competition&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">}</span>
+                <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_download_page</span><span class="p">(</span><span class="n">sem</span><span class="p">,</span> <span class="n">session</span><span class="p">))</span>            
+                <span class="n">async_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">async_list</span><span class="p">)</span>
+
+        <span class="c1"># Loop through the batch pages    </span>
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_data</span><span class="p">(</span><span class="n">page</span><span class="p">)</span>     
+
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_download_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sem</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; async function that checks semaphore unlocked before calling the</span>
+<span class="sd">        get function.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sem : int</span>
+<span class="sd">            Semaphore.</span>
+<span class="sd">        session : aiohttp.client.ClientSession  </span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Calls ._get_page</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">sem</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_page</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+
+        
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; async function that makes HTTP GET requests.</span>
+<span class="sd">    </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        session : aiohttp.client.ClientSession </span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------        </span>
+<span class="sd">        out : JSON response object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basepath</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                               <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span> 
+            <span class="n">out</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">out</span>
+
+        
+    <span class="k">def</span> <span class="nf">_get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get data from response.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        response : dict</span>
+<span class="sd">            Response.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        data : pd.Dateframe</span>
+<span class="sd">            Append data to self.data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">athletes</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;athletes&#39;</span><span class="p">]</span>
+        <span class="n">nathletes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">athletes</span><span class="p">)</span>
+        <span class="c1"># Loop over athletes in the page</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nathletes</span><span class="p">):</span>
+            <span class="n">athlete</span> <span class="o">=</span> <span class="n">athletes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">_id</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;userid&#39;</span><span class="p">]</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">]</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span>
+            <span class="n">age</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span>
+            <span class="n">ri</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;regionid&#39;</span><span class="p">]</span>
+            <span class="n">rn</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">]</span>
+            <span class="n">ai</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;affiliateid&#39;</span><span class="p">]</span>
+            <span class="n">_or</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;overallrank&#39;</span><span class="p">]</span>
+            <span class="n">_os</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;overallscore&#39;</span><span class="p">]</span>
+            <span class="c1"># Loop over workout</span>
+            <span class="n">wr</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span>
+            <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>                    
+                <span class="n">wr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;scores&#39;</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;workoutrank&#39;</span><span class="p">]</span>
+                <span class="n">ws</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">athlete</span><span class="p">[</span><span class="s1">&#39;scores&#39;</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;scoredisplay&#39;</span><span class="p">]</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">ri</span><span class="p">,</span> <span class="n">rn</span><span class="p">,</span> <span class="n">ai</span><span class="p">,</span> <span class="n">_or</span><span class="p">,</span> <span class="n">_os</span><span class="p">,</span>
+                    <span class="n">wr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ws</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wr</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ws</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">wr</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ws</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">wr</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">ws</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                    <span class="n">wr</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">ws</span><span class="p">[</span><span class="mi">4</span><span class="p">]]]</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+            
+    <span class="k">def</span> <span class="nf">_div_to_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Division number to a string.</span>
+<span class="sd">    </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : string</span>
+<span class="sd">            Name of the division.    </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">div_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="p">:</span><span class="s2">&quot;Men&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;2&#39;</span><span class="p">:</span><span class="s2">&quot;Women&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;3&#39;</span><span class="p">:</span><span class="s2">&quot;Men_45-49&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;4&#39;</span><span class="p">:</span><span class="s2">&quot;Women_45-49&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;5&#39;</span><span class="p">:</span><span class="s2">&quot;Men_50-54&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;6&#39;</span><span class="p">:</span><span class="s2">&quot;Women_50-54&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;7&#39;</span><span class="p">:</span><span class="s2">&quot;Men_55-59&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;8&#39;</span><span class="p">:</span><span class="s2">&quot;Women_55-59&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;9&#39;</span><span class="p">:</span><span class="s2">&quot;Men_60+&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;10&#39;</span><span class="p">:</span><span class="s2">&quot;Women_60+&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;11&#39;</span><span class="p">:</span><span class="s2">&quot;Team&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;12&#39;</span><span class="p">:</span><span class="s2">&quot;Men_40-44&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;13&#39;</span><span class="p">:</span><span class="s2">&quot;Women_40-44&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;14&#39;</span><span class="p">:</span><span class="s2">&quot;Boys_14-15&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;15&#39;</span><span class="p">:</span><span class="s2">&quot;Girls_14-15&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;16&#39;</span><span class="p">:</span><span class="s2">&quot;Boys_16-17&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;17&#39;</span><span class="p">:</span><span class="s2">&quot;Girls_16-17&quot;</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">div_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">division</span><span class="p">)]</span>
+    
+
+    <span class="k">def</span> <span class="nf">_scaled_to_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Scaled number to a string.</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : string</span>
+<span class="sd">            Workout type.</span>
+<span class="sd">    </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wt_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Rx&#39;</span><span class="p">,</span><span class="s1">&#39;Sc&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">wt_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">scaled</span><span class="p">]</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Ray Bell.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
