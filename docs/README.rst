@@ -1,3 +1,6 @@
+cfanalytics 
+-----------
+
 Notes on generating the docs (in a new environment).
 
 Install:
@@ -13,7 +16,7 @@ Install:
     $ cd docs
     $ sphinx-quickstart
     $ make html # This will generate an index.rst and a conf.py
-    $ sphinx-apidoc -o source/ ../cfanalytics ???
+    $ sphinx-apidoc -o . ../cfanalytics ???
     $ sphinx-autobuild . _build/html # To update
     # sphinx-build -b html . _build/html # is what readthedocs runs
     

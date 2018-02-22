@@ -26,7 +26,7 @@ As good practice I recommend installing in a new enviroment:
 .. parsed-literal:: 
  
     $ conda create -n cfa python=3.6
-    $ source activate cfa
+    $ conda activate cfa
     $ conda install -c conda-forge cfanalytics
 
 You can type ``source deactivate`` when finished. You can also check which environments you have created by typing ``conda info --envs``. 
