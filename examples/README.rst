@@ -1,7 +1,6 @@
 cfanalytics 
 -----------
 
-Notes on how to create the .ipynb's
-
-Start by typing ``jupyter notebook``
+These .ipynb's are created locally in my /test_GitHub_folder/examples
+then dragged and dropped here.
 

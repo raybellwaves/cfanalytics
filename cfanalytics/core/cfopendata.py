@@ -255,7 +255,9 @@ class Cfopendata(object):
                     '14':"Boys_14-15",
                     '15':"Girls_14-15",
                     '16':"Boys_16-17",
-                    '17':"Girls_16-17"}
+                    '17':"Girls_16-17",
+                    '18':"Men_35-39",
+                    '19':"Women_35-39"}
         return div_dict[str(self.division)]
     
 
