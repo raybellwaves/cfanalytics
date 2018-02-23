@@ -35,7 +35,7 @@ To remove an environment type ``conda remove --name cfa --all``.
 Examples
 --------
 
-...
+See examples `here <https://github.com/raybellwaves/cfanalytics/tree/master/examples>`.
 
 Acknowledgements
 ----------------
