@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 class Clean(object):
     """An object to clean download CrossFit open data.
     """
@@ -56,12 +57,9 @@ class Clean(object):
         # Convert the Userid column to integers
         self.df['Userid'] = self.df.Userid.astype(int)
               
-        # Convert height to SI units (m)
-        self._height_to_SI()
-        
-        # Convert weight ti SI units (kg)
-        self._weight_to_SI()
-        
+        # Convert height to SI units (m) and weight to SI units (kg)
+        self._height_weight_to_SI()
+                
         # Convert the Age column to integers
         if self.team == 0:
             self.df['Age'] = self.df.Age.astype(int)
@@ -205,8 +203,9 @@ class Clean(object):
         return self.df
             
 
-    def _height_to_SI(self):
-        """Convert height (feet and inches; cms) to SI units (m).
+    def _height_weight_to_SI(self):
+        """Convert height (feet and inches; cms) to SI units (m). and convert
+        weight (lbs; kg) to SI units (kg)
         
         Returns
         -------
@@ -214,9 +213,10 @@ class Clean(object):
             Crossfit open data with height in meters.
         """
         for i, row in self.df.iterrows():
-            height = row['Height']
             # Check if feet (last character is "), cms (last character is s) or
             # empty
+            height = row['Height']
+            weight = row['Weight']
             if height.endswith('"'):
                 # Add height in feet to the character(s) between ' and " 
                 # (inches) and divide by 100
@@ -229,36 +229,22 @@ class Clean(object):
                 new_height = np.nan
             # Could clean this up and check for physical values > 0.3 m and < 
             # 2.2 m
-            self.df.loc[i, 'Height'] = new_height
-        # Rename the column
-        self.df = self.df.rename(index=str,
-                                 columns={"Height": "Height (m)"})
-        return self.df
-    
-    
-    def _weight_to_SI(self):
-        """Convert weight (feet and inches; cms) to SI units (m).
-        
-        Returns
-        -------
-        cfopendata : pd.Dataframe
-            Crossfit open data with height in meters.
-        """        
-        for i, row in self.df.iterrows():
-            weight = row['Weight']
             if weight.endswith('b'):
                 new_weight = round(int(weight.split(' ')[0]) / 2.2046 )
             elif weight.endswith('g'):
                 new_weight = round(int(weight.split(' ')[0]))
             else:
                 new_weight = np.nan
+            # Could clean this up and check for physical values ...                
+            self.df.loc[i, 'Height'] = new_height
             self.df.loc[i, 'Weight'] = new_weight
-        # Rename the column
+        # Rename the columnc
         self.df = self.df.rename(index=str,
-                                 columns={"Weight": "Weight (kg)"})
+                                 columns={"Height": "Height (m)",
+                                          "Weight": "Weight (kg)"})        
         return self.df
-
     
+
     def _overall_percentile(self):
         """Add an overall percentile column.
         
