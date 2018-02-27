@@ -36,6 +36,8 @@ class Cfopendata(object):
         """
 
         self.year = year
+        if self.year < 2017:
+            raise ValueError('This is only tested on 2017 and 2018')
         self.division = division
         self.scaled = scaled
         self.batchpages = batchpages
@@ -80,12 +82,11 @@ class Cfopendata(object):
             self.startpage = self.startpage + self.batchpages
             print('getting pages '+str(self.startpage)+'-'+str(self.startpage+\
                   self.batchpages-1)+' of '+str(self.npages))
+        self.startpage = self.startpage + self.batchpages
             
         # Check if any pages left
-        self.startpage = self.startpage + self.batchpages
         if self.startpage <= self.npages:
-            # Update batchpages to however many pages are left
-            
+            # Update batchpages to however many pages are left     
             self.batchpages = self.npages - self.startpage + 1
             print('getting pages '+str(self.startpage)+'-'+str(self.startpage+\
                   self.batchpages-1)+' of '+str(self.npages))
