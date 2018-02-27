@@ -32,6 +32,5 @@ class TestCfopendata(TestCase):
                                         "competition": "1",
                                         "page": 1},
                                         headers=self.headers).json()
-        actual =  int(response['totalpages'])
+        actual = int(response['totalpages'])
         assert expected == actual
-        
