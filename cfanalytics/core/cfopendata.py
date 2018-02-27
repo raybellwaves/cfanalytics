@@ -70,16 +70,25 @@ class Cfopendata(object):
                              'bactchpages is '+str(self.batchpages)+'.')
         
         # Loop over the batch pages
-        ii = 0
+        ii = 1
         self.startpage = 1
+        print('getting pages '+str(self.startpage)+'-'+str(self.startpage+\
+              self.batchpages-1)+' of '+str(self.npages))
         while ii < int(self.npages/self.batchpages):
             self._ailoop()
             ii += 1
             self.startpage = self.startpage + self.batchpages
+            print('getting pages '+str(self.startpage)+'-'+str(self.startpage+\
+                  self.batchpages-1)+' of '+str(self.npages))
+            
         # Check if any pages left
-        if self.startpage < self.npages:
+        self.startpage = self.startpage + self.batchpages
+        if self.startpage <= self.npages:
             # Update batchpages to however many pages are left
-            self.batchpages = self.npages - self.batchpages
+            
+            self.batchpages = self.npages - self.startpage + 1
+            print('getting pages '+str(self.startpage)+'-'+str(self.startpage+\
+                  self.batchpages-1)+' of '+str(self.npages))
             self._ailoop()
 
         # Save data            
