@@ -6,6 +6,11 @@ from aiohttp import ClientSession # Asynchronous HTTP Client/Server
 import pandas as pd
 
 
+import os
+import time
+import shutil
+
+
 class Cfopendata(object):
     """An object to download CrossFit open data.
     """
@@ -42,6 +47,14 @@ class Cfopendata(object):
         self.scaled = scaled
         self.batchpages = batchpages
         self.ddir = ddir
+        # Setup a directory to store the temporary files
+        ddir2 = self.ddir+'/ind_files'
+        self.ddir2 = ddir2
+        if not os.path.isdir(ddir2):
+            os.makedirs(ddir2)
+        self.dname = self._div_to_name()+'_'+self._scaled_to_name()+'_'+\
+                     str(self.year)+'_raw'
+        print('Downloading '+str(self.dname))
         
         self.basepath = 'https://games.crossfit.com/competitions/api/v1/comp'+\
                         'etitions/open/'+str(self.year)+'/leaderboards?'
@@ -60,10 +73,10 @@ class Cfopendata(object):
                    str(self.year)[2:]+'.4_rank', str(self.year)[2:]+'.4_score',
                    str(self.year)[2:]+'.5_rank', str(self.year)[2:]+'.5_score']
         self.data = pd.DataFrame(columns=self.columns)
+        empty_df = pd.DataFrame(columns=self.columns) # Initiallized DataFrame
         
         # Find out how pages of results there are
         self.npages = self._get_npages()
-        
         if self.batchpages > self.npages:
             print('batchpages must be less than number of pages.')
             raise ValueError('Number of pages for year: '+str(self.year)+', '+\
@@ -72,18 +85,24 @@ class Cfopendata(object):
                              'bactchpages is '+str(self.batchpages)+'.')
         
         # Loop over the batch pages
-        ii = 1
         self.startpage = 1
-        print('getting pages '+str(self.startpage)+'-'+str(self.startpage+\
-              self.batchpages-1)+' of '+str(self.npages))
-        while ii < int(self.npages/self.batchpages):
+        ii = 1
+        while ii <= int(self.npages/self.batchpages):
+            print('getting pages '+str(self.startpage)+'-'+str(self.startpage+\
+                  self.batchpages-1)+' of '+str(self.npages))    
+            start_time = time.time() # Start time
             self._ailoop()
-            
+            print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
+
+            # Save data after each _ailoop is called
+            self.data_tmp = self.data.reset_index(drop=True)
+            self.dname_tmp = self._div_to_name()+'_'+self._scaled_to_name()+'_'+\
+                     str(self.year)+'_raw_'+str(ii).zfill(3)
+            self.data_tmp.to_pickle(self.ddir2+'/'+self.dname_tmp)
+            self.data = empty_df
+                
             ii += 1
             self.startpage = self.startpage + self.batchpages
-            print('getting pages '+str(self.startpage)+'-'+str(self.startpage+\
-                  self.batchpages-1)+' of '+str(self.npages))
-        self.startpage = self.startpage + self.batchpages
             
         # Check if any pages left
         if self.startpage <= self.npages:
@@ -91,14 +110,29 @@ class Cfopendata(object):
             self.batchpages = self.npages - self.startpage + 1
             print('getting pages '+str(self.startpage)+'-'+str(self.startpage+\
                   self.batchpages-1)+' of '+str(self.npages))
+            start_time = time.time() # Start time
             self._ailoop()
-
-        # Save data            
-        self.data = self.data.reset_index(drop=True)
-        self.dname = self._div_to_name()+'_'+self._scaled_to_name()+'_'+\
-                     str(self.year)+'_raw'
+            print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
+            
+            # Save data after each _ailoop is called
+            self.data_tmp = self.data.reset_index(drop=True)
+            self.dname_tmp = self._div_to_name()+'_'+self._scaled_to_name()+'_'+\
+                     str(self.year)+'_raw_'+str(ii).zfill(3)
+            self.data_tmp.to_pickle(self.ddir2+'/'+self.dname_tmp)
+            # Empty self.data
+            self.data = empty_df                
+            
+        # Append all data files
+        for root, dirs, files in os.walk(ddir2):
+            for file_ in files:
+                _df = pd.read_pickle(os.path.join(root, file_))
+                self.data = self.data.append(_df).reset_index(drop=True)
         self.data.to_pickle(self.ddir+'/'+self.dname)
         self.data.to_csv(path_or_buf=self.ddir+'/'+self.dname+'.csv')
+        
+        # Remove all files in ddii2
+        shutil.rmtree(self.ddir2)
+        
         
         
     def _get_npages(self):
