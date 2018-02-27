@@ -78,6 +78,7 @@ class Cfopendata(object):
               self.batchpages-1)+' of '+str(self.npages))
         while ii < int(self.npages/self.batchpages):
             self._ailoop()
+            
             ii += 1
             self.startpage = self.startpage + self.batchpages
             print('getting pages '+str(self.startpage)+'-'+str(self.startpage+\
