@@ -95,12 +95,8 @@ class Cfopendata(object):
             print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
 
             # Save data after each _ailoop is called
-            self.data_tmp = self.data.reset_index(drop=True)
-            self.dname_tmp = self._div_to_name()+'_'+self._scaled_to_name()+'_'+\
-                     str(self.year)+'_raw_'+str(ii).zfill(3)
-            self.data_tmp.to_pickle(self.ddir2+'/'+self.dname_tmp)
-            self.data = empty_df
-                
+            self._save_df(ii, empty_df)
+                            
             ii += 1
             self.startpage = self.startpage + self.batchpages
             
@@ -115,12 +111,7 @@ class Cfopendata(object):
             print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
             
             # Save data after each _ailoop is called
-            self.data_tmp = self.data.reset_index(drop=True)
-            self.dname_tmp = self._div_to_name()+'_'+self._scaled_to_name()+'_'+\
-                     str(self.year)+'_raw_'+str(ii).zfill(3)
-            self.data_tmp.to_pickle(self.ddir2+'/'+self.dname_tmp)
-            # Empty self.data
-            self.data = empty_df                
+            self._save_df(ii, empty_df)                
             
         # Append all data files
         for root, dirs, files in os.walk(ddir2):
@@ -133,8 +124,51 @@ class Cfopendata(object):
         # Remove all files in ddii2
         shutil.rmtree(self.ddir2)
         
-        
-        
+
+    def _div_to_name(self):
+        """Division number to a string.
+    
+        Returns
+        -------
+        out : string
+            Name of the division.    
+        """
+        div_dict = {'1':"Men",
+                    '2':"Women",
+                    '3':"Men_45-49",
+                    '4':"Women_45-49",
+                    '5':"Men_50-54",
+                    '6':"Women_50-54",
+                    '7':"Men_55-59",
+                    '8':"Women_55-59",
+                    '9':"Men_60+",
+                    '10':"Women_60+",
+                    '11':"Team",
+                    '12':"Men_40-44",
+                    '13':"Women_40-44",
+                    '14':"Boys_14-15",
+                    '15':"Girls_14-15",
+                    '16':"Boys_16-17",
+                    '17':"Girls_16-17",
+                    '18':"Men_35-39",
+                    '19':"Women_35-39"}
+        return div_dict[str(self.division)]
+
+
+    def _scaled_to_name(self):
+        """Scaled number to a string.
+    
+    
+        Returns
+        -------
+        out : string
+            Workout type.
+    
+        """
+        wt_list = ['Rx','Sc']
+        return wt_list[self.scaled]
+
+
     def _get_npages(self):
         """Get the number of pages of results.
         
@@ -276,45 +310,25 @@ class Cfopendata(object):
             self.data = self.data.append(df)
 
             
-    def _div_to_name(self):
-        """Division number to a string.
-    
-        Returns
-        -------
-        out : string
-            Name of the division.    
-        """
-        div_dict = {'1':"Men",
-                    '2':"Women",
-                    '3':"Men_45-49",
-                    '4':"Women_45-49",
-                    '5':"Men_50-54",
-                    '6':"Women_50-54",
-                    '7':"Men_55-59",
-                    '8':"Women_55-59",
-                    '9':"Men_60+",
-                    '10':"Women_60+",
-                    '11':"Team",
-                    '12':"Men_40-44",
-                    '13':"Women_40-44",
-                    '14':"Boys_14-15",
-                    '15':"Girls_14-15",
-                    '16':"Boys_16-17",
-                    '17':"Girls_16-17",
-                    '18':"Men_35-39",
-                    '19':"Women_35-39"}
-        return div_dict[str(self.division)]
-    
+    def _save_df(self, ii, empty_df):
+        """Save pandas.DataFrame.
+        
+        Parameters
+        ----------
+        ii : int
+            Batchpages counter.
+        empty_df : pd.DataFrame.
+            Empty pandas DataFrame with coloumns already added.
 
-    def _scaled_to_name(self):
-        """Scaled number to a string.
-    
-    
         Returns
         -------
-        out : string
-            Workout type.
-    
+        data : pd.Dateframe
+            Saves file and make self.data empty
         """
-        wt_list = ['Rx','Sc']
-        return wt_list[self.scaled]
+        self.data_tmp = self.data.reset_index(drop=True)
+        self.dname_tmp = self._div_to_name()+'_'+self._scaled_to_name()+'_'+\
+            str(self.year)+'_raw_'+str(ii).zfill(3)
+        self.data_tmp.to_pickle(self.ddir2+'/'+self.dname_tmp)
+        self.data = empty_df
+        return self
+                   
