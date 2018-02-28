@@ -118,6 +118,14 @@ class Cfopendata(object):
             for file_ in files:
                 _df = pd.read_pickle(os.path.join(root, file_))
                 self.data = self.data.append(_df).reset_index(drop=True)
+                
+        # For unknown reasons it puts the batch pages ~100 onwards at the start
+        # Sort data by 'Overallrank' coloumn
+        self.data['Overallrank'] = self.data.Overallrank.astype(int)
+        self.data = self.data.sort_values(by=['Overallrank'])
+        # This doesn't quite match the leaderboard but it shouldn't matter
+        # As everyone who is ranked the same overall will have similar stats
+        self.data['Overallrank'] = self.data.Overallrank.astype(str)
         self.data.to_pickle(self.ddir+'/'+self.dname)
         self.data.to_csv(path_or_buf=self.ddir+'/'+self.dname+'.csv')
         
@@ -327,8 +335,7 @@ class Cfopendata(object):
         """
         self.data_tmp = self.data.reset_index(drop=True)
         self.dname_tmp = self._div_to_name()+'_'+self._scaled_to_name()+'_'+\
-            str(self.year)+'_raw_'+str(ii).zfill(3)
+            str(self.year)+'_raw_'+str(ii).zfill(4)
         self.data_tmp.to_pickle(self.ddir2+'/'+self.dname_tmp)
         self.data = empty_df
         return self
-                   
