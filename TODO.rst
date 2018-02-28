@@ -15,6 +15,7 @@ Data
 
 Analysis/plotting
 -----------------
-- Create distribution plots of scores using seaborn `seaborn <https://seaborn.pydata.org/>`__. I'm guessing the results will look like a `Rayleigh <https://en.wikipedia.org/wiki/Rayleigh_distribution>`__ distribution.
+- Create distribution plots of scores using `seaborn <https://seaborn.pydata.org/>`__. I'm guessing the results will look like a `Rayleigh <https://en.wikipedia.org/wiki/Rayleigh_distribution>`__ distribution.
 - Create interactive plots of scores using `bokeh <https://bokeh.pydata.org/en/latest/>`__ / `holoviews <http://holoviews.org/>`__.
-- Create spatial plots using `cartopy <http://scitools.org.uk/cartopy/docs/latest/index.html>`__.
+- Create spatial plots using `cartopy <http://scitools.org.uk/cartopy/docs/latest/index.html>`__. Can average the data by region (could possibly using `regionmask <http://regionmask.readthedocs.io/en/stable/index.html>`__).
+- Create interactive spatial plots using `geoviews <http://geo.holoviews.org/>`__.
