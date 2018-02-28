@@ -5,7 +5,7 @@ cfanalytics
 | .csv files are Comma-separated values and can be opened with Microsoft Excel® or better yet `jupyter lab <https://github.com/jupyterlab/jupyterlab>`__.
 |
 | ``*_raw`` files are the data downloaded from the CrossFit® site without any post-processing.
-| Files without the ``_raw`` have been post-processed using this (INSERT LINK HERE) methodology and are fit for statistical analysis and visualization.
+| Files that don't end in ``_raw`` have been post-processed using this (INSERT LINK HERE) methodology and are fit for statistical analysis and visualization.
 |
 | *If you publish anything with this data please let me know and if you like, I will add a link to your work here.*
 | 
