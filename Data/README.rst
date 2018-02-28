@@ -1,6 +1,8 @@
 cfanalytics 
 -----------
 
+| *All division files can be downloaded `here <https://miami.box.com/s/lvrhgswninw59piawtwhi3lfs14rvx72>__`*. I've simply added data for the main divisions here to save a bit of space on my Repo.
+|
 | The files without any extensions are `pandas.DataFrame <https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`__'s and can be opened with ``pd.read_pickle(file)``. 
 | .csv files are Comma-separated values and can be opened with Microsoft Excel® or better yet `jupyter lab <https://github.com/jupyterlab/jupyterlab>`__.
 |
