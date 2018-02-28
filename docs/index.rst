@@ -1,19 +1,16 @@
 cfanalytics: Downloading, analyzing and visualizing CrossFit data
 =================================================================
 
-Contents
-========
+Documentation
+-------------
+
+**Help & reference**
+
+* :docs:`whats-new`
 
 .. toctree::
-   :maxdepth: 2
-   :glob:
-
-   *
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   :maxdepth: 1
+   :hidden:
+   :caption: Help & reference
+   
+   whats-new

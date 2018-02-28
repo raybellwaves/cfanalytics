@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 
+import time
+from functools import reduce
+
 
 class Clean(object):
     """An object to clean download CrossFit open data.
@@ -26,6 +29,11 @@ class Clean(object):
         self.df = pd.read_pickle(self.path)
         self.wods = wods
         
+        # Check file is in the right order
+        if int(self.df.iloc[0, 8]) != 1:
+            raise IOError('File is not in correct order. Should be ascending \
+                          rank')
+        
         # Check if file is Rx or Sc
         if 'Rx' in self.path:
             self.scaled = 0
@@ -39,21 +47,26 @@ class Clean(object):
         # Work as year as 4 characters before '_raw'
         self.year = int(str(self.path[-8:-4]))
         self.yearwod = int(str(self.path[-6:-4]))
-        
+
+        print('Removing lines')
+        start_time = time.time() # Start time
         # Check if all 5 workouts have been complete
         if self.df.iloc[0, -1] is not 0:         
             if self.scaled == 0:
                 # Remove people who did not enter a single score if all 5 
                 # workouts have been complete  
                 self._rm_all_0s()
-                # If Rx remove all who entered all scaled scores
-                self._rm_all_Sc()
+                # Set scaled as nan and remove all who entered all scaled scores
+                self._rm_all_Sc()    
                 # If Rx remove all who entered scaled scores and no scores
                 self._rm_all_Sc_and_0s()
             else:
-                # Remove all '- s' from scores
+                # Remove all '- s' from scores and convert 0 to NaN
                 self._rm_Sc_str()
-           
+        print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
+        
+        print('Cleaning attributes')        
+        start_time = time.time() # Start time
         # Convert the Userid column to integers
         self.df['Userid'] = self.df.Userid.astype(int)
               
@@ -78,11 +91,14 @@ class Clean(object):
         # Convert the Overallscore column to integers
         self.df['Overallscore'] = self.df.Overallscore.astype(int)
         
-        # Add an 'Overallpercentile' column        
+        # Add an 'Overallpercentile' column      
         self._overall_percentile()
+        print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
         
         # Workouts
         for i in range(1, 6):
+            print('Cleaning wod '+str(i))
+            start_time = time.time() # Start time
             # Convert wod_rank to integers
             self.df[str(self.yearwod)+'.'+str(i)+'_rank'] = \
             self.df[str(self.yearwod)+'.'+str(i)+'_rank'].astype(int)
@@ -105,10 +121,11 @@ class Clean(object):
                     if wod_type.split(' ')[-1] == 'cap':
                         self._time_to_reps(i, wod_type)
                     if wod_type.split(' ')[-1] == 'time':
-                        self._reps_to_time(i, wod_type)                   
+                        self._reps_to_time(i, wod_type) 
             # Calculate percentiles on integers
             else:
                 self._wod_percentile(i)
+            print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
        
         # Save data
         # Remove the '_raw' from the file
@@ -125,36 +142,64 @@ class Clean(object):
         cfopendata : pd.Dataframe
             Crossfit open data with less rows.
         """
-        i = 0
+        # Count up from the bottom and find first the first person who doesn't 
+        #have all 0's
+        i = len(self.df) - 1
         while i < len(self.df):
-            # Find first person with 0 entries
-            if self.df.iloc[i,11] == '0' and self.df.iloc[i,13] == '0' and\
-            self.df.iloc[i,15] == '0' and self.df.iloc[i,17] == '0' and\
-            self.df.iloc[i,19] == '0':
+            if self.df.iloc[i,11] != '0' or self.df.iloc[i,13] != '0' or\
+            self.df.iloc[i,15] != '0' or self.df.iloc[i,17] != '0' or\
+            self.df.iloc[i,19] != '0':
                 self.df = self.df.iloc[:i]
-                i = i + len(self.df)
-            i += 1
+                i = i + len(self.df) # Make i big to escape
+            i -= 1
         return self.df.reset_index(drop=True)
     
     
     def _rm_all_Sc(self):
         """Remove people who didn't enter a Rx score in Rx division.
+        And set other Scale values as np.nans
         
         Returns
         -------
         cfopendata : pd.Dataframe
             Crossfit open data with less rows.
         """
-        for i, row in self.df.iterrows():
-            # Check if last char of all scores is s
-            if self.df.iloc[i,11].endswith('- s') and\
-            self.df.iloc[i,13].endswith('- s') and\
-            self.df.iloc[i,15].endswith('- s') and\
-            self.df.iloc[i,17].endswith('- s') and\
-            self.df.iloc[i,19].endswith('- s'):
-                self.df.iloc[i,:] = np.nan
-        # Drop rows with all NaNs
-        self.df = self.df.dropna().reset_index(drop=True)
+        # Count up from the bottom and keep going until you find the fist person
+        # who entered all Rx scores
+        w1 = self.df.iloc[:,11].values.tolist()
+        w2 = self.df.iloc[:,13].values.tolist()
+        w3 = self.df.iloc[:,15].values.tolist()
+        w4 = self.df.iloc[:,17].values.tolist()
+        w5 = self.df.iloc[:,19].values.tolist()
+        
+        w1i = np.empty(shape=(0, 0), dtype=int)
+        w2i = np.empty(shape=(0, 0), dtype=int)
+        w3i = np.empty(shape=(0, 0), dtype=int)
+        w4i = np.empty(shape=(0, 0), dtype=int)
+        w5i = np.empty(shape=(0, 0), dtype=int)
+        for i, _tmp in enumerate(w1):
+            if w1[i].endswith('- s'):
+                w1i = np.append(w1i, i)
+            if w2[i].endswith('- s'):
+                w2i = np.append(w2i, i)
+            if w3[i].endswith('- s'):
+                w3i = np.append(w3i, i)                
+            if w4[i].endswith('- s'):
+                w4i = np.append(w4i, i)
+            if w5[i].endswith('- s'):
+                w5i = np.append(w5i, i)
+                
+        self.df.iloc[w1i,11] = np.nan
+        self.df.iloc[w2i,13] = np.nan
+        self.df.iloc[w3i,15] = np.nan
+        self.df.iloc[w4i,17] = np.nan
+        self.df.iloc[w5i,19] = np.nan
+        
+        # Find duplicates in np array
+        _tmp = reduce(np.intersect1d, (w1i, w2i, w3i, w4i, w5i))
+        self.df.iloc[_tmp,:] = np.nan
+                
+        self.df = self.df.dropna(axis=0, how='all').reset_index(drop=True)    
         return self.df
 
 
@@ -167,39 +212,58 @@ class Clean(object):
         cfopendata : pd.Dataframe
             Crossfit open data with less rows.
         """
-        for i, row in self.df.iterrows():
-            # Check if the last char is either a 's' or a '0'
-            s1 = self.df.iloc[i,11].endswith('- s') or\
-            self.df.iloc[i,11] == '0'
-            s2 = self.df.iloc[i,13].endswith('- s') or\
-            self.df.iloc[i,13] == '0'
-            s3 = self.df.iloc[i,15].endswith('- s') or\
-            self.df.iloc[i,15] == '0'            
-            s4 = self.df.iloc[i,17].endswith('- s') or\
-            self.df.iloc[i,17] == '0'
-            s5 = self.df.iloc[i,19].endswith('- s') or\
-            self.df.iloc[i,19] == '0'
-            if s1 and s2 and s3 and s4 and s5:
-                self.df.iloc[i,:] = np.nan
-        # Drop rows with all NaNs
-        self.df = self.df.dropna().reset_index(drop=True)
-        return self.df    
+        w1 = self.df.iloc[:,11].values.tolist()
+        w2 = self.df.iloc[:,13].values.tolist()
+        w3 = self.df.iloc[:,15].values.tolist()
+        w4 = self.df.iloc[:,17].values.tolist()
+        w5 = self.df.iloc[:,19].values.tolist()
+        
+        w1i = np.empty(shape=(0, 0), dtype=int)
+        w2i = np.empty(shape=(0, 0), dtype=int)
+        w3i = np.empty(shape=(0, 0), dtype=int)
+        w4i = np.empty(shape=(0, 0), dtype=int)
+        w5i = np.empty(shape=(0, 0), dtype=int)        
+        for i, _tmp in enumerate(w1):
+            if w1[i] == '0':
+                w1i = np.append(w1i, i)
+            if w2[i] == '0':
+                w2i = np.append(w2i, i)               
+            if w3[i] == '0':                
+                w3i = np.append(w3i, i)                
+            if w4[i] == '0':
+                w4i = np.append(w4i, i)
+            if w5[i] == '0':
+                w5i = np.append(w5i, i)
+                
+        self.df.iloc[w1i,11] = np.nan
+        self.df.iloc[w2i,13] = np.nan
+        self.df.iloc[w3i,15] = np.nan
+        self.df.iloc[w4i,17] = np.nan
+        self.df.iloc[w5i,19] = np.nan
+        
+        # Remove NaNs if in all score columns
+        _ind = pd.isnull(self.df.iloc[:,[11,13,15,17,19]]).all(axis=1)
+        _in2 = _ind[_ind == True].index.values
+        self.df.iloc[_in2,:] = np.nan        
+        self.df = self.df.dropna(axis=0, how='all').reset_index(drop=True)    
+        return self.df        
+           
 
-    
     def _rm_Sc_str(self):
-        """Remove the ' - s' from all the scores.
+        """Remove the ' - s' from all the scores. and make 0 a np.nan
         
         Returns
         -------
         cfopendata : pd.Dataframe
-            Crossfit open data without ' - s' in scores.
+            Crossfit open data without ' - s' in scores and np.nans.
         """
+        # Can look at cleaning this up if there are some big scaled files
         for i, row in self.df.iterrows():
             for j, val in enumerate(np.array([11, 13, 15, 17, 19])):
                 self.df.iloc[i,val] = self.df.iloc[i,val].split(' ')[0:-2]
                 self.df.iloc[i,val] = " ".join(self.df.iloc[i,val])
                 if not self.df.iloc[i,val]:
-                    self.df.iloc[i,val] = '0'
+                    self.df.iloc[i,val] = np.nan
         return self.df
             
 
@@ -212,39 +276,36 @@ class Clean(object):
         cfopendata : pd.Dataframe
             Crossfit open data with height in meters.
         """
-        for i, row in self.df.iterrows():
-            # Check if feet (last character is "), cms (last character is s) or
-            # empty
-            height = row['Height']
-            weight = row['Weight']
-            if height.endswith('"'):
-                # Add height in feet to the character(s) between ' and " 
-                # (inches) and divide by 100
-                new_height = round((((int(height[0]) * 12) +\
-                              int(height.split('\'')[1].split('"')[0])) *\
+        h = self.df.iloc[:,2].values.tolist()
+        w = self.df.iloc[:,3].values.tolist()
+        
+        nh = np.empty([len(h)], dtype=np.double)
+        nw = np.empty([len(h)], dtype=np.double)        
+        for i, _tmp in enumerate(nh):
+            #print(i)
+            if h[i].endswith('"'):
+                nh[i] = round((((int(h[i][0]) * 12) +\
+                              int(h[i].split('\'')[1].split('"')[0])) *\
                               2.54) / 100.0, 2)
-            elif height.endswith('m'):
-                new_height = int(height.split(' ')[0]) / 100.0
+            elif h[i].endswith('m'):
+                nh[i] = int(h[i].split(' ')[0]) / 100.0
             else:
-                new_height = np.nan
-            # Could clean this up and check for physical values > 0.3 m and < 
-            # 2.2 m
-            if weight.endswith('b'):
-                new_weight = round(int(weight.split(' ')[0]) / 2.2046 )
-            elif weight.endswith('g'):
-                new_weight = round(int(weight.split(' ')[0]))
+                nh[i] = np.nan
+            if w[i].endswith('"'):
+                nw[i] = round(int(w[i].split(' ')[0]) / 2.2046 )
+            elif w[i].endswith('g'):
+                nw[i] = round(int(w[i].split(' ')[0]))
             else:
-                new_weight = np.nan
-            # Could clean this up and check for physical values ...                
-            self.df.loc[i, 'Height'] = new_height
-            self.df.loc[i, 'Weight'] = new_weight
+                nw[i] = np.nan
+        self.df.iloc[:,2] = nh
+        self.df.iloc[:,3] = nw
         # Rename the columnc
         self.df = self.df.rename(index=str,
                                  columns={"Height": "Height (m)",
                                           "Weight": "Weight (kg)"})        
-        return self.df
-    
+        return self.df        
 
+    
     def _overall_percentile(self):
         """Add an overall percentile column.
         
@@ -294,6 +355,7 @@ class Clean(object):
 
     def _extract_score(self, week):
         """Convert workout score to a pd.Timedelta or integer.
+        (NaNs are already in the right place).
         
         Parameters
         ----------
@@ -306,44 +368,31 @@ class Clean(object):
             Score are either a pd.Timedelta, integer or nan.
         """
         df_c_name = str(self.yearwod)+'.'+str(week)+'_score'
+        s = self.df.loc[:,df_c_name].values.tolist()  
+       
         # Keep track of the indicies
-        tdi = np.empty(shape=(0, 0)) # time delta
-        ii = np.empty(shape=(0, 0)) # integers
-        ni = np.empty(shape=(0, 0)) # np.nans
-        for i, row in self.df.iterrows():
-            score = row[df_c_name]
-            # Remove any scaled scores if Rx
-            if self.scaled == 0:
-                # Remove any scled scores
-                if score.endswith('- s'):
-                    new_score = np.nan
-                    ni = np.append(ni, i)
-                else:
-                    if ':' in score:
-                        # Some team scores are H:MM:SS
-                        if score.count(':') > 1:
-                            new_score = pd.to_timedelta(score)
-                        else:
-                            new_score = pd.to_timedelta('0:'+score)
-                        tdi = np.append(tdi, i)
-                    elif 's' in score:
-                        new_score = int(score.split(" ")[0])
-                        ii = np.append(ii, i)
-                    else:
-                        new_score = np.nan
-                        ni = np.append(ni, i)
+        tdi = np.empty(shape=(0, 0), dtype=int) # time delta
+        ii = np.empty(shape=(0, 0), dtype=int) # integers
+        ni = np.empty(shape=(0, 0), dtype=int) # np.nans
+        
+        # initialize new_score array
+        _s = self.df.loc[:,df_c_name].reset_index(drop=True)
+        for i, _str in enumerate(s):
+            if isinstance(_str, float):
+                ni = np.append(ni, i)
             else:
-                # Should write this as a function rather than copying above...
-                if ':' in score:
-                    new_score = pd.to_timedelta('0:'+score)
+                if ':' in _str:
+                    # Some team scores are H:MM:SS
+                    if _str.count(':') > 1:                
+                        _s[i] = pd.to_timedelta(_str)
+                    else:
+                        _s[i] = pd.to_timedelta('0:'+_str)
                     tdi = np.append(tdi, i)
-                elif 's' in score:
-                    new_score = int(score.split(" ")[0])
-                    ii = np.append(ii, i)
                 else:
-                    new_score = np.nan
-                    ni = np.append(ni, i)
-            self.df.loc[i, df_c_name] = new_score
+                    _s[i] = int(_str.split(" ")[0])
+                    ii = np.append(ii, i)
+        self.df.loc[:,df_c_name] = _s.values
+
         self.tdi = tdi
         self.ii = ii
         self.ni = ni
