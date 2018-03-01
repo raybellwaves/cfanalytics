@@ -47,12 +47,13 @@ class Clean(object):
         # Work as year as 4 characters before '_raw'
         self.year = int(str(self.path[-8:-4]))
         self.yearwod = int(str(self.path[-6:-4]))
-
-        print('Removing lines')
+        
+        print('Cleaning '+str(self.path))
         start_time = time.time() # Start time
         # Check if all 5 workouts have been complete
         if self.df.iloc[0, -1] is not 0:         
             if self.scaled == 0:
+                print('Removing lines')
                 # Remove people who did not enter a single score if all 5 
                 # workouts have been complete  
                 self._rm_all_0s()
@@ -62,6 +63,7 @@ class Clean(object):
                 self._rm_all_Sc_and_0s()
             else:
                 # Remove all '- s' from scores and convert 0 to NaN
+                print('Removing - s')                
                 self._rm_Sc_str()
         print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
         
@@ -257,13 +259,57 @@ class Clean(object):
         cfopendata : pd.Dataframe
             Crossfit open data without ' - s' in scores and np.nans.
         """
-        # Can look at cleaning this up if there are some big scaled files
-        for i, row in self.df.iterrows():
-            for j, val in enumerate(np.array([11, 13, 15, 17, 19])):
-                self.df.iloc[i,val] = self.df.iloc[i,val].split(' ')[0:-2]
-                self.df.iloc[i,val] = " ".join(self.df.iloc[i,val])
-                if not self.df.iloc[i,val]:
-                    self.df.iloc[i,val] = np.nan
+        w1 = self.df.iloc[:,11].values.tolist()
+        w2 = self.df.iloc[:,13].values.tolist()
+        w3 = self.df.iloc[:,15].values.tolist()
+        w4 = self.df.iloc[:,17].values.tolist()
+        w5 = self.df.iloc[:,19].values.tolist()
+        
+        nw1 = [None] * len(w1)
+        nw2 = [None] * len(w2)
+        nw3 = [None] * len(w3)
+        nw4 = [None] * len(w4)
+        nw5 = [None] * len(w5)        
+
+        w1i = np.empty(shape=(0, 0), dtype=int)
+        w2i = np.empty(shape=(0, 0), dtype=int)
+        w3i = np.empty(shape=(0, 0), dtype=int)
+        w4i = np.empty(shape=(0, 0), dtype=int)
+        w5i = np.empty(shape=(0, 0), dtype=int)
+        for i, _tmp in enumerate(w1):
+            if w1[i].endswith('- s'):
+                nw1[i] = w1[i][0:-4]
+            else:
+                w1i = np.append(w1i, i)
+            if w2[i].endswith('- s'):
+                nw2[i] = w2[i][0:-4]
+            else:
+                w2i = np.append(w2i, i)                
+            if w3[i].endswith('- s'):
+                nw3[i] = w3[i][0:-4]
+            else:
+                w3i = np.append(w3i, i)
+            if w4[i].endswith('- s'):
+                nw4[i] = w4[i][0:-4]
+            else:
+                w4i = np.append(w4i, i)
+            if w5[i].endswith('- s'):
+                nw5[i] = w5[i][0:-4]
+            else:
+                w5i = np.append(w5i, i)
+
+        self.df.iloc[:,11] = nw1
+        self.df.iloc[:,13] = nw2
+        self.df.iloc[:,15] = nw3
+        self.df.iloc[:,17] = nw4
+        self.df.iloc[:,19] = nw5
+                        
+        self.df.iloc[w1i,11] = np.nan
+        self.df.iloc[w2i,13] = np.nan
+        self.df.iloc[w3i,15] = np.nan
+        self.df.iloc[w4i,17] = np.nan
+        self.df.iloc[w5i,19] = np.nan        
+        
         return self.df
             
 
