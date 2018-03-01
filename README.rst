@@ -29,7 +29,7 @@ The version numbers 0.1.X are all development versions and I chip away at the pr
 As a precautionary note, it has been developed entirely on Mac OSX using Python installed with `anaconda <https://anaconda.org/anaconda/python>`__. Therefore, use in Windows and Linux at your 
 own peril.
 
-As good practice I recommend installing with anaconda/miniconda and in a new enviroment:
+As good practice, I recommend installing with anaconda/miniconda and in a new enviroment:
 
 .. parsed-literal:: 
  
