@@ -61,7 +61,7 @@ class Clean(object):
         if self.scaled == 0:
             print('Removing lines')
             # Remove people who did not enter a single score if all 5 
-            # workouts have been complete  
+            # workouts have been complete
             self._rm_all_0s()            
             # Set scaled as nan and remove all who entered all scaled scores
             self._rm_all_Sc()
@@ -194,7 +194,8 @@ class Clean(object):
                     self.df = self.df.iloc[:i]
                     i = i + len(self.df) # Make i big to escape
             i -= 1
-        return self.df.reset_index(drop=True)
+        self.df = self.df.reset_index(drop=True)
+        return self.df
     
     
     def _rm_all_Sc(self):
