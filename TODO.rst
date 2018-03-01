@@ -19,6 +19,6 @@ Analysis/plotting
 -----------------
 - Create distribution plots of scores using `seaborn <https://seaborn.pydata.org/>`__. I'm guessing the results will look like a `Rayleigh <https://en.wikipedia.org/wiki/Rayleigh_distribution>`__ distribution.
 - Create interactive plots of scores using `bokeh <https://bokeh.pydata.org/en/latest/>`__ / `holoviews <http://holoviews.org/>`__. Would be cool if could query for a person on the plot may not be possible.
-- Create spatial plots using `cartopy <http://scitools.org.uk/cartopy/docs/latest/index.html>`__. Can group the data by region (could possibly using `regionmask <http://regionmask.readthedocs.io/en/stable/index.html>`__).
+- Create spatial plots using `cartopy <http://scitools.org.uk/cartopy/docs/latest/index.html>`__. Can group the data by region (possibly using `regionmask <http://regionmask.readthedocs.io/en/stable/index.html>`__).
 - Create interactive spatial plots using `geoviews <http://geo.holoviews.org/>`__. This may allow you to zoom in on individual gyms. Or do some fancy shit and plot the data on Google Earth. 
-- Check out xarray's `API <https://github.com/pydata/xarray/tree/0d69bf9dbf281f0f0f48ac2fadda61a82533aac3/xarray/plot>`__ (and `docs <http://xarray.pydata.org/en/stable/plotting.html>__) for how to code it and use as similar like ``df.dist_plot()``???
+- Check out ``xarray``'s `API <https://github.com/pydata/xarray/tree/0d69bf9dbf281f0f0f48ac2fadda61a82533aac3/xarray/plot>`__ (and `docs <http://xarray.pydata.org/en/stable/plotting.html>`__) for how to code it as a Class and use it as something like ``df.dist_plot()``???
