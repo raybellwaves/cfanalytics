@@ -49,23 +49,31 @@ class Clean(object):
         self.yearwod = int(str(self.path[-6:-4]))
         
         print('Cleaning '+str(self.path))
-        start_time = time.time() # Start time
-        # Check if all 5 workouts have been complete
-        if self.df.iloc[0, -1] is not 0:         
-            if self.scaled == 0:
-                print('Removing lines')
-                # Remove people who did not enter a single score if all 5 
-                # workouts have been complete  
-                self._rm_all_0s()
-                # Set scaled as nan and remove all who entered all scaled scores
-                self._rm_all_Sc()    
-                # If Rx remove all who entered scaled scores and no scores
-                self._rm_all_Sc_and_0s()
-            else:
-                # Remove all '- s' from scores and convert 0 to NaN
-                print('Removing - s')                
-                self._rm_Sc_str()
-        print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
+        start_time = time.time()
+        
+        # Check how many workouts have been compltes
+        if self.df.iloc[0, -1] is None:
+            # NaN the workouts which are not complete
+            self._empty_to_nan()
+        else:            
+            self.wodscompleted = 5
+            
+        if self.scaled == 0:
+            print('Removing lines')
+            # Remove people who did not enter a single score if all 5 
+            # workouts have been complete  
+            self._rm_all_0s()            
+            # Set scaled as nan and remove all who entered all scaled scores
+            self._rm_all_Sc()
+            # If Rx remove all who entered scaled scores and no scores
+            self._rm_all_Sc_and_0s()
+        else:
+            # Remove all '- s' from scores and convert 0 and empty to NaN            
+            self._rm_Sc_str()
+
+            
+        print("that took " +\
+              str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
         
         print('Cleaning attributes')        
         start_time = time.time() # Start time
@@ -76,6 +84,7 @@ class Clean(object):
         self._height_weight_to_SI()
                 
         # Convert the Age column to integers
+        # Team doesn't have an age
         if self.team == 0:
             self.df['Age'] = self.df.Age.astype(int)
         
@@ -95,12 +104,13 @@ class Clean(object):
         
         # Add an 'Overallpercentile' column      
         self._overall_percentile()
-        print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
+        print("that took " +\
+              str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
         
         # Workouts
-        for i in range(1, 6):
+        for i in range(1, self.wodscompleted + 1):
             print('Cleaning wod '+str(i))
-            start_time = time.time() # Start time
+            start_time = time.time()
             # Convert wod_rank to integers
             self.df[str(self.yearwod)+'.'+str(i)+'_rank'] = \
             self.df[str(self.yearwod)+'.'+str(i)+'_rank'].astype(int)
@@ -145,14 +155,44 @@ class Clean(object):
             Crossfit open data with less rows.
         """
         # Count up from the bottom and find first the first person who doesn't 
-        #have all 0's
+        #have all 0's or ''
         i = len(self.df) - 1
         while i < len(self.df):
-            if self.df.iloc[i,11] != '0' or self.df.iloc[i,13] != '0' or\
-            self.df.iloc[i,15] != '0' or self.df.iloc[i,17] != '0' or\
-            self.df.iloc[i,19] != '0':
-                self.df = self.df.iloc[:i]
-                i = i + len(self.df) # Make i big to escape
+            # In 2018 no scores are ''
+            if self.year == 2018:
+                # Need to know how many wods have been complete
+                # This is horrible coding but i'm too lazy to clean it up for
+                # the time being
+                if self.wodscompleted == 1:
+                    if self.df.iloc[i,11] != '':
+                        self.df = self.df.iloc[:i]
+                        i = i + len(self.df)
+                elif self.wodscompleted == 2:
+                    if self.df.iloc[i,11] != '' or self.df.iloc[i,13] != '':
+                        self.df = self.df.iloc[:i]
+                        i = i + len(self.df)
+                elif self.wodscompleted == 3:
+                    if self.df.iloc[i,11] != '' or self.df.iloc[i,13] != '' or\
+                    self.df.iloc[i,15] != '':
+                        self.df = self.df.iloc[:i]
+                        i = i + len(self.df)
+                elif self.wodscompleted == 4:
+                    if self.df.iloc[i,11] != '' or self.df.iloc[i,13] != '' or\
+                    self.df.iloc[i,15] != '' or self.df.iloc[i,17] != '':
+                        self.df = self.df.iloc[:i]
+                        i = i + len(self.df)
+                else:                        
+                    if self.df.iloc[i,11] != '' or self.df.iloc[i,13] != '' or\
+                    self.df.iloc[i,15] != '' or self.df.iloc[i,17] != '' or\
+                    self.df.iloc[i,19] != '':
+                        self.df = self.df.iloc[:i]
+                        i = i + len(self.df)                               
+            else:
+                if self.df.iloc[i,11] != '0' or self.df.iloc[i,13] != '0' or\
+                self.df.iloc[i,15] != '0' or self.df.iloc[i,17] != '0' or\
+                self.df.iloc[i,19] != '0':
+                    self.df = self.df.iloc[:i]
+                    i = i + len(self.df) # Make i big to escape
             i -= 1
         return self.df.reset_index(drop=True)
     
@@ -166,8 +206,6 @@ class Clean(object):
         cfopendata : pd.Dataframe
             Crossfit open data with less rows.
         """
-        # Count up from the bottom and keep going until you find the fist person
-        # who entered all Rx scores
         w1 = self.df.iloc[:,11].values.tolist()
         w2 = self.df.iloc[:,13].values.tolist()
         w3 = self.df.iloc[:,15].values.tolist()
@@ -179,17 +217,22 @@ class Clean(object):
         w3i = np.empty(shape=(0, 0), dtype=int)
         w4i = np.empty(shape=(0, 0), dtype=int)
         w5i = np.empty(shape=(0, 0), dtype=int)
+        
         for i, _tmp in enumerate(w1):
             if w1[i].endswith('- s'):
                 w1i = np.append(w1i, i)
-            if w2[i].endswith('- s'):
-                w2i = np.append(w2i, i)
-            if w3[i].endswith('- s'):
-                w3i = np.append(w3i, i)                
-            if w4[i].endswith('- s'):
-                w4i = np.append(w4i, i)
-            if w5[i].endswith('- s'):
-                w5i = np.append(w5i, i)
+            if not isinstance(w2[i], float):   
+                if w2[i].endswith('- s'):
+                    w2i = np.append(w2i, i)
+            if not isinstance(w3[i], float):                    
+                if w3[i].endswith('- s'):
+                    w3i = np.append(w3i, i)                
+            if not isinstance(w4[i], float): 
+                if w4[i].endswith('- s'):
+                    w4i = np.append(w4i, i)
+            if not isinstance(w5[i], float):
+                if w5[i].endswith('- s'):
+                    w5i = np.append(w5i, i)
                 
         self.df.iloc[w1i,11] = np.nan
         self.df.iloc[w2i,13] = np.nan
@@ -197,11 +240,15 @@ class Clean(object):
         self.df.iloc[w4i,17] = np.nan
         self.df.iloc[w5i,19] = np.nan
         
-        # Find duplicates in np array
+        # Find eduplicates in np array
         _tmp = reduce(np.intersect1d, (w1i, w2i, w3i, w4i, w5i))
         self.df.iloc[_tmp,:] = np.nan
-                
-        self.df = self.df.dropna(axis=0, how='all').reset_index(drop=True)    
+        # Set rows with nans in scores to nans
+        _ind = pd.isnull(self.df.iloc[:,[11,13,15,17,19]]).all(axis=1)
+        _in2 = _ind[_ind == True].index.values
+        self.df.iloc[_in2,:] = np.nan 
+
+        self.df = self.df.dropna(axis=0, how='all').reset_index(drop=True)
         return self.df
 
 
@@ -252,7 +299,7 @@ class Clean(object):
            
 
     def _rm_Sc_str(self):
-        """Remove the ' - s' from all the scores. and make 0 a np.nan
+        """Remove the ' - s' from all the scores. and make 0 or'' a np.nan
         
         Returns
         -------
@@ -279,24 +326,26 @@ class Clean(object):
         for i, _tmp in enumerate(w1):
             if w1[i].endswith('- s'):
                 nw1[i] = w1[i][0:-4]
-            else:
-                w1i = np.append(w1i, i)
-            if w2[i].endswith('- s'):
-                nw2[i] = w2[i][0:-4]
-            else:
-                w2i = np.append(w2i, i)                
-            if w3[i].endswith('- s'):
-                nw3[i] = w3[i][0:-4]
-            else:
-                w3i = np.append(w3i, i)
-            if w4[i].endswith('- s'):
-                nw4[i] = w4[i][0:-4]
-            else:
-                w4i = np.append(w4i, i)
-            if w5[i].endswith('- s'):
-                nw5[i] = w5[i][0:-4]
-            else:
-                w5i = np.append(w5i, i)
+            if not isinstance(w2[i], float):   
+                if w2[i].endswith('- s'):
+                    nw2[i] = w2[i][0:-4]
+                else:
+                    w2i = np.append(w2i, i)
+            if not isinstance(w3[i], float):   
+                if w3[i].endswith('- s'):
+                    nw3[i] = w3[i][0:-4]
+                else:
+                    w3i = np.append(w3i, i)                    
+            if not isinstance(w4[i], float):   
+                if w4[i].endswith('- s'):
+                    nw4[i] = w4[i][0:-4]
+                else:
+                    w4i = np.append(w4i, i)
+            if not isinstance(w5[i], float):   
+                if w5[i].endswith('- s'):
+                    nw5[i] = w5[i][0:-4]
+                else:
+                    w5i = np.append(w5i, i)                    
 
         self.df.iloc[:,11] = nw1
         self.df.iloc[:,13] = nw2
@@ -311,8 +360,26 @@ class Clean(object):
         self.df.iloc[w5i,19] = np.nan        
         
         return self.df
-            
 
+
+    def _empty_to_nan(self):
+        """Convert uncompleted workouts to np.nan's.
+        
+        Returns
+        -------
+        cfopendata : pd.Dataframe
+            Crossfit open data with np.nans in uncompleted workouts.
+        """
+        # First week is always run otherwise file doesn't exist
+        self.wodscompleted = 1
+        for i, ci in enumerate([12, 14, 16, 18]):
+            if self.df.iloc[0,ci] is None:
+                self.df.iloc[:,[ci,ci+1]] = np.nan
+            else:
+                self.wodscompleted += 1
+        return self
+        
+            
     def _height_weight_to_SI(self):
         """Convert height (feet and inches; cms) to SI units (m). and convert
         weight (lbs; kg) to SI units (kg)
@@ -326,15 +393,17 @@ class Clean(object):
         w = self.df.iloc[:,3].values.tolist()
         
         nh = np.empty([len(h)], dtype=np.double)
-        nw = np.empty([len(h)], dtype=np.double)        
+        nw = np.empty([len(h)], dtype=np.double)
+        
         for i, _tmp in enumerate(nh):
-            #print(i)
             if h[i].endswith('"'):
                 nh[i] = round((((int(h[i][0]) * 12) +\
                               int(h[i].split('\'')[1].split('"')[0])) *\
                               2.54) / 100.0, 2)
             elif h[i].endswith('m'):
                 nh[i] = int(h[i].split(' ')[0]) / 100.0
+            elif h[i].endswith('in'):
+                nh[i] = round((int(h[i].split(' ')[0]) * 2.54) / 100.0, 2)
             else:
                 nh[i] = np.nan
             if w[i].endswith('"'):
@@ -414,7 +483,7 @@ class Clean(object):
             Score are either a pd.Timedelta, integer or nan.
         """
         df_c_name = str(self.yearwod)+'.'+str(week)+'_score'
-        s = self.df.loc[:,df_c_name].values.tolist()  
+        s = self.df.loc[:,df_c_name].values.tolist()
        
         # Keep track of the indicies
         tdi = np.empty(shape=(0, 0), dtype=int) # time delta
@@ -427,6 +496,7 @@ class Clean(object):
             if isinstance(_str, float):
                 ni = np.append(ni, i)
             else:
+                # Convert time to time delta
                 if ':' in _str:
                     # Some team scores are H:MM:SS
                     if _str.count(':') > 1:                
@@ -434,6 +504,7 @@ class Clean(object):
                     else:
                         _s[i] = pd.to_timedelta('0:'+_str)
                     tdi = np.append(tdi, i)
+                # Convert reps to integers
                 else:
                     _s[i] = int(_str.split(" ")[0])
                     ii = np.append(ii, i)

@@ -16,7 +16,7 @@ class Cfopendata(object):
     """
     
     
-    def __init__(self, year, division, scaled, batchpages, ddir):
+    def __init__(self, year, division, scaled, ddir):
         """Crossfit open data object.
         
         Parameters
@@ -45,7 +45,6 @@ class Cfopendata(object):
             raise ValueError('This is only tested on 2017 and 2018')
         self.division = division
         self.scaled = scaled
-        self.batchpages = batchpages
         self.ddir = ddir
         # Setup a directory to store the temporary files
         ddir2 = self.ddir+'/ind_files'
@@ -54,6 +53,7 @@ class Cfopendata(object):
             os.makedirs(ddir2)
         self.dname = self._div_to_name()+'_'+self._scaled_to_name()+'_'+\
                      str(self.year)+'_raw'
+                     
         print('Downloading '+str(self.dname))
         
         self.basepath = 'https://games.crossfit.com/competitions/api/v1/comp'+\
@@ -77,13 +77,14 @@ class Cfopendata(object):
         
         # Find out how pages of results there are
         self.npages = self._get_npages()
-        if self.batchpages > self.npages:
-            print('batchpages must be less than number of pages.')
-            raise ValueError('Number of pages for year: '+str(self.year)+', '+\
-                             'division: '+str(self.division)+', scaled: '+\
-                             str(self.scaled)+'is '+str(self.npages)+'. '+\
-                             'bactchpages is '+str(self.batchpages)+'.')
-        
+        # Workout how many pages to get at once based on the number of pages
+        if self.npages < 10:
+            self.batchpages = 2
+        elif self.npages >= 10 and self.npages < 100:
+            self.batchpages = 10
+        else:
+            self.batchpages = 30
+            
         # Loop over the batch pages
         self.startpage = 1
         ii = 1
@@ -195,14 +196,17 @@ class Cfopendata(object):
                                         "competition": "1",
                                         "page": 1},
                                         headers=self.headers).json()
-        return response['totalpages']
-    
+        if self.year == 2018:
+            return  response['pagination']['totalPages']
+        else:
+            return response['totalpages']
+        
 
     def _ailoop(self):
         """Create a concurrent loop.
         
-           See https://www.blog.pythonlibrar\y.org/2016/07/26/python-3-an-intro\
-           -to-asyncio/
+        See https://www.blog.pythonlibrar\y.org/2016/07/26/python-3-an-intro\
+        -to-asyncio/
         """
         aioloop = asyncio.get_event_loop()
         aifuture = asyncio.ensure_future(self._loop_pages())
@@ -290,32 +294,60 @@ class Cfopendata(object):
         data : pd.Dateframe
             Append data to self.data.
         """
-        athletes = response['athletes']
-        nathletes = len(athletes)
-        # Loop over athletes in the page
-        for i in range(nathletes):
-            athlete = athletes[i]
-            _id = athlete['userid']
-            name = athlete['name']
-            height = athlete['height']
-            weight = athlete['weight']
-            age = athlete['age']
-            ri = athlete['regionid']
-            rn = athlete['region']
-            ai = athlete['affiliateid']
-            _or = athlete['overallrank']
-            _os = athlete['overallscore']
-            # Loop over workout
-            wr = [None] * 5
-            ws = [None] * 5
-            for j in range(5):                    
-                wr[j] = athlete['scores'][j]['workoutrank']
-                ws[j] = athlete['scores'][j]['scoredisplay']
-            row = [[_id, name, height, weight, age, ri, rn, ai, _or, _os,
-                    wr[0], ws[0], wr[1], ws[1], wr[2], ws[2], wr[3], ws[3],
-                    wr[4], ws[4]]]
-            df = pd.DataFrame(row, columns=self.columns)
-            self.data = self.data.append(df)
+        if self.year == 2018:
+            athletes = response['leaderboardRows']
+            nathletes = len(athletes)
+             # Loop over athletes in the page
+            for i in range(nathletes):
+                athlete = athletes[i]
+                _id = athlete['entrant']['competitorId']
+                name = athlete['entrant']['competitorName']
+                height = athlete['entrant']['height']
+                weight = athlete['entrant']['weight']
+                age = athlete['entrant']['age']
+                ri = athlete['entrant']['regionId']
+                rn = athlete['entrant']['regionName']
+                ai = athlete['entrant']['affiliateId']
+                _or = athlete['overallRank']
+                _os = athlete['overallScore']
+                # Loop over workout
+                wr = [None] * 5
+                ws = [None] * 5
+                for j in range(len(athlete['scores'])):
+                    wr[j] = athlete['scores'][j]['rank']
+                    ws[j] = athlete['scores'][j]['scoreDisplay']                   
+                row = [[_id, name, height, weight, age, ri, rn, ai, _or, _os,
+                        wr[0], ws[0], wr[1], ws[1], wr[2], ws[2], wr[3], ws[3],
+                        wr[4], ws[4]]]
+                df = pd.DataFrame(row, columns=self.columns)
+                self.data = self.data.append(df)
+        else:
+            athletes = response['athletes']
+            nathletes = len(athletes)
+            # Loop over athletes in the page
+            for i in range(nathletes):
+                athlete = athletes[i]
+                _id = athlete['userid']
+                name = athlete['name']
+                height = athlete['height']
+                weight = athlete['weight']
+                age = athlete['age']
+                ri = athlete['regionid']
+                rn = athlete['region']
+                ai = athlete['affiliateid']
+                _or = athlete['overallrank']
+                _os = athlete['overallscore']
+                # Loop over workout
+                wr = [None] * 5
+                ws = [None] * 5
+                for j in range(5):                    
+                    wr[j] = athlete['scores'][j]['workoutrank']
+                    ws[j] = athlete['scores'][j]['scoredisplay']
+                row = [[_id, name, height, weight, age, ri, rn, ai, _or, _os,
+                        wr[0], ws[0], wr[1], ws[1], wr[2], ws[2], wr[3], ws[3],
+                        wr[4], ws[4]]]
+                df = pd.DataFrame(row, columns=self.columns)
+                self.data = self.data.append(df)
 
             
     def _save_df(self, ii, empty_df):
