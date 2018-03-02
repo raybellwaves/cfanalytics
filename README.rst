@@ -45,6 +45,11 @@ Examples
 
 See examples `here <https://github.com/raybellwaves/cfanalytics/tree/master/Examples>`__.
 
+Documentation
+-------------
+
+The documentation is hosted at http://cfanalytics.readthedocs.io/
+
 Acknowledgements
 ----------------
 
@@ -52,13 +57,7 @@ Acknowledgements
 - ``Cfopendata`` is a very minor adaptation from `captamericadevs/CFOpenData <https://github.com/captamericadevs/CFOpenData>`__. Who smartly developed code to download CrossFit® open data using `aiohttp <https://github.com/aio-libs/aiohttp>`__. 
 - `xarray <https://github.com/pydata/xarray/>`__ developers. Whose package template I used for this package.
 
-Documentation
--------------
-
-The documentation is hosted at http://cfanalytics.readthedocs.io/
-
 Disclaimer
 ----------
 
 This project is not affiliated with CrossFit, Inc.
-
