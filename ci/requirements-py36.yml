@@ -6,5 +6,6 @@ dependencies:
   - requests
   - aiohttp
   - pandas
+  - numpy
   - coveralls
   - pytest-cov
