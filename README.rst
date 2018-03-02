@@ -22,7 +22,7 @@ or
 
 ``pip install cfanalytics``
 
-The version numbers 0.1.X are all development versions and I chip away at the project on here. I occasionally build the package if I finished something large. But you can grab the least-buggy version of this package by typing:
+The version numbers 0.1.X are all development versions as I chip away at the project on here in my spare time. I occasionally build the package if i've finished something large. But you can grab the least-buggy version of this package by typing:
 
 ``pip install git+https://github.com/raybellwaves/cfanalytics``
 
