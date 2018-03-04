@@ -7,5 +7,6 @@ dependencies:
   - aiohttp
   - pandas
   - numpy
+  - xarray
   - coveralls
   - pytest-cov
