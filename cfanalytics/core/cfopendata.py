@@ -4,11 +4,14 @@ from aiohttp import ClientSession # Asynchronous HTTP Client/Server
 
 
 import pandas as pd
+import xarray as xr
 
 
 import os
 import time
 import shutil
+
+from .utils import open_wods
 
 
 class Cfopendata(object):
@@ -16,22 +19,39 @@ class Cfopendata(object):
     """
     
     
-    def __init__(self, year, division, scaled, ddir):
+    def __init__(self, year, division, scaled, path):
         """Crossfit open data object.
         
         Parameters
         ----------
         year : int
             Year to download crossfit data e.g. 2017.
-        division : int (1-17)
+        division : int (1-19)
             Numerical values of the division.
             1 : Men
             2 : Women
+            3 : Men 45-49
+            4 : Women 45-49
+            5 : Men 50-54
+            6 :Women 50-54
+            7 : Men 55-59
+            8 : Women 55-59
+            9 : Men 60+
+            10 : Women 60+
+            11 : Team
+            12 : Men 40-44
+            13 : Women 40-44
+            14 : Boys 14-15
+            15 : Girls 14-15
+            16 : Boys 16-17
+            17 : Girls 16-17
+            18 : Men 35-39
+            19 : Women 35-39            
         scaled : int (0,1)
             Numerical values if workout was Scaled or RX'd.
             0 : Rx
             1 : Sc
-        ddir : str
+        path : str
             Directory where to save data.
 
         Returns
@@ -45,17 +65,18 @@ class Cfopendata(object):
             raise ValueError('This is only tested on 2017 and 2018')
         self.division = division
         self.scaled = scaled
-        self.ddir = ddir
+        self.path = path
+        
         # Setup a directory to store the temporary files
-        ddir2 = self.ddir+'/ind_files'
-        self.ddir2 = ddir2
-        if not os.path.isdir(ddir2):
-            os.makedirs(ddir2)
+        path2 = self.path+'/ind_files'
+        self.path2 = path2
+        if not os.path.isdir(path2):
+            os.makedirs(path2)
+        
+        # Setup the name of the file to save
         self.dname = self._div_to_name()+'_'+self._scaled_to_name()+'_'+\
                      str(self.year)+'_raw'
                      
-        print('Downloading '+str(self.dname))
-        
         self.basepath = 'https://games.crossfit.com/competitions/api/v1/comp'+\
                         'etitions/open/'+str(self.year)+'/leaderboards?'
                         
@@ -65,18 +86,21 @@ class Cfopendata(object):
                '2 Safari/537.36'}
                         
         # Setup DataFrame
-        self.columns = ['Userid', 'Name', 'Height', 'Weight', 'Age', 'Regionid',
-                   'Regionname', 'Affiliateid', 'Overallrank', 'Overallscore', 
-                   str(self.year)[2:]+'.1_rank', str(self.year)[2:]+'.1_score',
-                   str(self.year)[2:]+'.2_rank', str(self.year)[2:]+'.2_score',
-                   str(self.year)[2:]+'.3_rank', str(self.year)[2:]+'.3_score',
-                   str(self.year)[2:]+'.4_rank', str(self.year)[2:]+'.4_score',
-                   str(self.year)[2:]+'.5_rank', str(self.year)[2:]+'.5_score']
+        wod_info = open_wods(self.year)
+        self.wodscompleted = int(wod_info['wodscompleted'].values)
+        score_cols = wod_info['dfheader'].values
+        self.columns = ['Userid', 'Name', 'Height', 'Weight', 'Age',
+                        'Regionid', 'Regionname', 'Affiliateid', 'Overallrank',
+                        'Overallscore']
+        self.columns.extend(score_cols)
         self.data = pd.DataFrame(columns=self.columns)
         empty_df = pd.DataFrame(columns=self.columns) # Initiallized DataFrame
+
+        print('Downloading '+str(self.dname))
         
         # Find out how pages of results there are
         self.npages = self._get_npages()
+        
         # Workout how many pages to get at once based on the number of pages
         if self.npages < 10:
             self.batchpages = 2
@@ -90,10 +114,13 @@ class Cfopendata(object):
         ii = 1
         while ii <= int(self.npages/self.batchpages):
             print('getting pages '+str(self.startpage)+'-'+str(self.startpage+\
-                  self.batchpages-1)+' of '+str(self.npages))    
-            start_time = time.time() # Start time
+                  self.batchpages-1)+' of '+str(self.npages)) 
+
+            start_time = time.time()
             self._ailoop()
-            print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
+            print("that took " +\
+                  str(round((time.time() - start_time) / 60.0, 2)) +\
+                  " minutes")
 
             # Save data after each _ailoop is called
             self._save_df(ii, empty_df)
@@ -115,7 +142,7 @@ class Cfopendata(object):
             self._save_df(ii, empty_df)                
             
         # Append all data files
-        for root, dirs, files in os.walk(ddir2):
+        for root, dirs, files in os.walk(path2):
             for file_ in files:
                 _df = pd.read_pickle(os.path.join(root, file_))
                 self.data = self.data.append(_df).reset_index(drop=True)
@@ -127,11 +154,11 @@ class Cfopendata(object):
         # This doesn't quite match the leaderboard but it shouldn't matter
         # As everyone who is ranked the same overall will have similar stats
         self.data['Overallrank'] = self.data.Overallrank.astype(str)
-        self.data.to_pickle(self.ddir+'/'+self.dname)
-        self.data.to_csv(path_or_buf=self.ddir+'/'+self.dname+'.csv')
+        self.data.to_pickle(self.path+'/'+self.dname)
+        self.data.to_csv(path_or_buf=self.path+'/'+self.dname+'.csv')
         
         # Remove all files in ddii2
-        shutil.rmtree(self.ddir2)
+        shutil.rmtree(self.path2)
         
 
     def _div_to_name(self):
@@ -294,9 +321,13 @@ class Cfopendata(object):
         data : pd.Dateframe
             Append data to self.data.
         """
+        wr = [None] * self.wodscompleted
+        ws = [None] * self.wodscompleted
+        
         if self.year == 2018:
             athletes = response['leaderboardRows']
             nathletes = len(athletes)
+            
              # Loop over athletes in the page
             for i in range(nathletes):
                 athlete = athletes[i]
@@ -310,20 +341,21 @@ class Cfopendata(object):
                 ai = athlete['entrant']['affiliateId']
                 _or = athlete['overallRank']
                 _os = athlete['overallScore']
-                # Loop over workout
-                wr = [None] * 5
-                ws = [None] * 5
-                for j in range(len(athlete['scores'])):
+                row = [_id, name, height, weight, age, ri, rn, ai, _or, _os]
+                
+                # Loop over workouts
+                for j in range(self.wodscompleted):
                     wr[j] = athlete['scores'][j]['rank']
-                    ws[j] = athlete['scores'][j]['scoreDisplay']                   
-                row = [[_id, name, height, weight, age, ri, rn, ai, _or, _os,
-                        wr[0], ws[0], wr[1], ws[1], wr[2], ws[2], wr[3], ws[3],
-                        wr[4], ws[4]]]
+                    row.append(wr[j])
+                    ws[j] = athlete['scores'][j]['scoreDisplay']
+                    row.append(ws[j])
+                row = [row]
                 df = pd.DataFrame(row, columns=self.columns)
                 self.data = self.data.append(df)
         else:
             athletes = response['athletes']
             nathletes = len(athletes)
+            
             # Loop over athletes in the page
             for i in range(nathletes):
                 athlete = athletes[i]
@@ -337,15 +369,15 @@ class Cfopendata(object):
                 ai = athlete['affiliateid']
                 _or = athlete['overallrank']
                 _os = athlete['overallscore']
-                # Loop over workout
-                wr = [None] * 5
-                ws = [None] * 5
-                for j in range(5):                    
+                row = [_id, name, height, weight, age, ri, rn, ai, _or, _os]
+                
+                # Loop over workouts
+                for j in range(self.wodscompleted):
                     wr[j] = athlete['scores'][j]['workoutrank']
+                    row.append(wr[j])
                     ws[j] = athlete['scores'][j]['scoredisplay']
-                row = [[_id, name, height, weight, age, ri, rn, ai, _or, _os,
-                        wr[0], ws[0], wr[1], ws[1], wr[2], ws[2], wr[3], ws[3],
-                        wr[4], ws[4]]]
+                    row.append(ws[j])
+                row = [row]
                 df = pd.DataFrame(row, columns=self.columns)
                 self.data = self.data.append(df)
 
@@ -368,6 +400,6 @@ class Cfopendata(object):
         self.data_tmp = self.data.reset_index(drop=True)
         self.dname_tmp = self._div_to_name()+'_'+self._scaled_to_name()+'_'+\
             str(self.year)+'_raw_'+str(ii).zfill(4)
-        self.data_tmp.to_pickle(self.ddir2+'/'+self.dname_tmp)
+        self.data_tmp.to_pickle(self.path2+'/'+self.dname_tmp)
         self.data = empty_df
         return self
