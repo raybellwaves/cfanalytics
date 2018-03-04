@@ -1,4 +1,4 @@
-from cfanalytics.tests import TestCase
+from . import TestCase
 
 
 class TestClean(TestCase):    

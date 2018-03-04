@@ -1,7 +1,7 @@
 import pytest
 import requests # HTTP library
 
-from cfanalytics.tests import TestCase
+from . import TestCase
 
 
 class TestCfopendata(TestCase):    
