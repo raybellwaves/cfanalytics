@@ -297,7 +297,7 @@ class Clean(object):
         
         # Add new list back in and nans
         for i in range(self.wodscompleted):
-            self.df.iloc[:,self.ci[i]] = l[i][:]
+            self.df.iloc[:,self.ci[i]] = nl[i][:]
             tmp = ii[i,:]
             _tmp = tmp[tmp >= 0]
             self.df.iloc[_tmp,self.ci[i]] = np.nan         

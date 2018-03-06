@@ -20,6 +20,8 @@ The version numbers 0.1.X are all development versions as I chip away at the pro
 
 ``pip install git+https://github.com/raybellwaves/cfanalytics``
 
+The psudo-stable packages are here (but this was more of an exercise for me to the build the packages).
+
 ``conda install -c conda-forge cfanalytics``
 
 ``pip install cfanalytics``
