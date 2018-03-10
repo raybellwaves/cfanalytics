@@ -5,9 +5,6 @@ import numpy as np
 import time
 
 
-from .utils import open_wods
-
-
 class Clean(object):
     """An object to clean (post-process) downloaded CrossFit open data.
     """

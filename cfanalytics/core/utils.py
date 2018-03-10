@@ -41,18 +41,20 @@ def open_wods(year):
                 dfcheader.append(_yr+'.'+w+' predicted time')
                 dfcheader.append(_yr+'.'+w+' predicted reps')                
     else:
-        wodscompleted = 3
-        units = ['reps', 'time/reps', 'weight']        
-        totalreps = [np.inf, 110, 1] # With timed wods
-        timecaps = [20, 12, 12] # With timed wods      
-        predictions = [False, True, False]
+        wodscompleted = 4
+        units = ['reps', 'time/reps', 'weight', 'time/reps']        
+        totalreps = [np.inf, 110, 1, 928] 
+        timecaps = [20, 12, 12, 14]      
+        predictions = [False, True, False, True]
         dfheader = [_yr+'.1 rank', _yr+'.1 score', _yr+'.2 rank',
                     _yr+'.2 score', _yr+'.2a rank', _yr+'.2a score']
         scorel = [_yr+'.1 score', _yr+'.2 score', _yr+'.2a score']
         dfcheader = [_yr+'.1 rank', _yr+'.1 score', _yr+'.1 percentile',
                      _yr+'.2 rank', _yr+'.2 score', _yr+'.2 percentile',
                      _yr+'.2 predicted time', _yr+'.2 predicted reps',
-                     _yr+'.2a rank', _yr+'.2a score', _yr+'.2a percentile']        
+                     _yr+'.2a rank', _yr+'.2a score', _yr+'.2a percentile',
+                     _yr+'.3 rank', _yr+'.3 score', _yr+'.3 percentile',
+                     _yr+'.3 predicted time', _yr+'.3 predicted reps']        
         
     ds['units'] = units
     ds['predictions'] = predictions

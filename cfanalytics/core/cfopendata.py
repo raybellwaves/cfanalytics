@@ -10,8 +10,6 @@ import os
 import time
 import shutil
 
-from .utils import open_wods
-
 
 class Cfopendata(object):
     """An object to download CrossFit open data.
