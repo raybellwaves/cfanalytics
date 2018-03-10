@@ -49,7 +49,8 @@ def open_wods(year):
         dfheader = [_yr+'.1 rank', _yr+'.1 score', _yr+'.2 rank',
                     _yr+'.2 score', _yr+'.2a rank', _yr+'.2a score',
                     _yr+'.3 rank', _yr+'.3 score']
-        scorel = [_yr+'.1 score', _yr+'.2 score', _yr+'.2a score']
+        scorel = [_yr+'.1 score', _yr+'.2 score', _yr+'.2a score',
+                  _yr+'.3 score']
         dfcheader = [_yr+'.1 rank', _yr+'.1 score', _yr+'.1 percentile',
                      _yr+'.2 rank', _yr+'.2 score', _yr+'.2 percentile',
                      _yr+'.2 predicted time', _yr+'.2 predicted reps',
