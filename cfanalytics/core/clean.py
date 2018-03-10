@@ -703,4 +703,4 @@ class Clean(object):
             
         # Add to self.cleandata
         self.cleandata.loc[:, wod+' predicted reps'] = p_reps
-        return self 
+        return self
