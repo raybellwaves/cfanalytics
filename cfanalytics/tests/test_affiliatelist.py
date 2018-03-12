@@ -13,7 +13,7 @@ class TestAffiliatelist(TestCase):
                '2 Safari/537.36'}
 
     def test_get_lat_lons(self):
-        expected = 13883
+        expected = 40.3604
         response = requests.get(self.basepath+'/getAllAffiliates.php').json()
-        actual = len(response)
+        actual = response[0][0]
         assert expected == actual
