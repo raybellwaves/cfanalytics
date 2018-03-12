@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='cfanalytics',
-      version='0.1.7',
+      version='0.1.8',
       license='BSD 3-Clause License',
       author='Ray Bell',      
       author_email='rbell1987@gmail.com',

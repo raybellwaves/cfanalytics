@@ -136,7 +136,9 @@ class Cfopendata(object):
                   self.batchpages-1)+' of '+str(self.npages))
             start_time = time.time() # Start time
             self._ailoop()
-            print("that took " + str(round((time.time() - start_time) / 60.0, 2)) + " minutes")
+            print("that took " +\
+                  str(round((time.time() - start_time) / 60.0, 2)) +\
+                  " minutes")
             
             # Save data after each _ailoop is called
             self._save_df(ii, empty_df)                
@@ -238,7 +240,7 @@ class Cfopendata(object):
         """
         aioloop = asyncio.get_event_loop()
         aifuture = asyncio.ensure_future(self._loop_pages())
-        aioloop.run_until_complete(aifuture)        
+        aioloop.run_until_complete(aifuture)
         
 
     async def _loop_pages(self):
@@ -253,7 +255,7 @@ class Cfopendata(object):
         async_list = []
         sem = asyncio.Semaphore(self.batchpages) # create asyncio.locks.Semaph\
         #ore object
-        async with ClientSession() as session: 
+        async with ClientSession() as session:
             for p in range(self.startpage, self.startpage+self.batchpages):
                 self.p = p
                 self.params={"division": self.division,
