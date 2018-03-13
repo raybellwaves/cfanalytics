@@ -135,7 +135,7 @@ class Clean(object):
         # Workouts
         for i in range(self.wodscompleted):
             start_time = time.time()
-            wod = self.scorel[i].split(' ')[0]
+            wod = self.scorel[i].split('_')[0]
             print('Cleaning wod '+wod)
             
             # Convert wod rank to integers

@@ -12,7 +12,6 @@ Code
 Data
 ----
 - Backfill data before 2017. Can then track an athlete's percentile over the years or a the maximum score/P50 for a repeated workout in various years.
-- Download affliate list and work out how to convert address to lat-lon for spatial analysis.
 
 Analysis/plotting
 -----------------
