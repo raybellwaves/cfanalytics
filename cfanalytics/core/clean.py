@@ -320,6 +320,7 @@ class Clean(object):
         nw = np.empty([len(h)], dtype=np.double)
         
         for i, _tmp in enumerate(nh):
+            # Height
             if h[i].endswith('"'):
                 nh[i] = round((((int(h[i][0]) * 12) +\
                               int(h[i].split('\'')[1].split('"')[0])) *\
@@ -330,10 +331,13 @@ class Clean(object):
                 nh[i] = round((int(h[i].split(' ')[0]) * 2.54) / 100.0, 2)
             else:
                 nh[i] = np.nan
+            # Weight
             if w[i].endswith('"'):
                 nw[i] = round(int(w[i].split(' ')[0]) / 2.2046 )
             elif w[i].endswith('g'):
                 nw[i] = round(int(w[i].split(' ')[0]))
+            elif h[i].endswith('lb'):
+                nw[i] = round(int(w[i].split(' ')[0]) / 2.2046 )
             else:
                 nw[i] = np.nan
         self.cleandata.iloc[:,2] = nh
