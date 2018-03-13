@@ -30,33 +30,33 @@ def open_wods(year):
         scorel = []
         for i in range(wodscompleted):
             w = str(i+1)
-            dfheader.append(_yr+'.'+w+' rank')
-            dfheader.append(_yr+'.'+w+' score')
-            scorel.append(_yr+'.'+w+' score')
+            dfheader.append(_yr+'.'+w+'_rank')
+            dfheader.append(_yr+'.'+w+'_score')
+            scorel.append(_yr+'.'+w+'_score')
             
-            dfcheader.append(_yr+'.'+w+' rank')
-            dfcheader.append(_yr+'.'+w+' score')
-            dfcheader.append(_yr+'.'+w+' percentile')
+            dfcheader.append(_yr+'.'+w+'_rank')
+            dfcheader.append(_yr+'.'+w+'_score')
+            dfcheader.append(_yr+'.'+w+'_percentile')
             if predictions[i]:
-                dfcheader.append(_yr+'.'+w+' predicted time')
-                dfcheader.append(_yr+'.'+w+' predicted reps')                
+                dfcheader.append(_yr+'.'+w+'_predicted_time')
+                dfcheader.append(_yr+'.'+w+'_predicted_reps')                
     else:
         wodscompleted = 4
         units = ['reps', 'time/reps', 'weight', 'time/reps']        
         totalreps = [np.inf, 110, 1, 928] 
         timecaps = [20, 12, 12, 14]      
         predictions = [False, True, False, True]
-        dfheader = [_yr+'.1 rank', _yr+'.1 score', _yr+'.2 rank',
-                    _yr+'.2 score', _yr+'.2a rank', _yr+'.2a score',
-                    _yr+'.3 rank', _yr+'.3 score']
-        scorel = [_yr+'.1 score', _yr+'.2 score', _yr+'.2a score',
-                  _yr+'.3 score']
-        dfcheader = [_yr+'.1 rank', _yr+'.1 score', _yr+'.1 percentile',
-                     _yr+'.2 rank', _yr+'.2 score', _yr+'.2 percentile',
-                     _yr+'.2 predicted time', _yr+'.2 predicted reps',
-                     _yr+'.2a rank', _yr+'.2a score', _yr+'.2a percentile',
-                     _yr+'.3 rank', _yr+'.3 score', _yr+'.3 percentile',
-                     _yr+'.3 predicted time', _yr+'.3 predicted reps']        
+        dfheader = [_yr+'.1_rank', _yr+'.1_score', _yr+'.2_rank',
+                    _yr+'.2_score', _yr+'.2a_rank', _yr+'.2a_score',
+                    _yr+'.3_rank', _yr+'.3_score']
+        scorel = [_yr+'.1_score', _yr+'.2_score', _yr+'.2a_score',
+                  _yr+'.3_score']
+        dfcheader = [_yr+'.1_rank', _yr+'.1_score', _yr+'.1_percentile',
+                     _yr+'.2_rank', _yr+'.2_score', _yr+'.2_percentile',
+                     _yr+'.2_predicted_time', _yr+'.2_predicted_reps',
+                     _yr+'.2a_rank', _yr+'.2a_score', _yr+'.2a_percentile',
+                     _yr+'.3_rank', _yr+'.3_score', _yr+'.3_percentile',
+                     _yr+'.3_predicted_time', _yr+'.3_predicted_reps']        
         
     ds['units'] = units
     ds['predictions'] = predictions

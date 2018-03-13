@@ -47,14 +47,14 @@ class Clean(object):
             self.ci[j] = self.df.columns.get_loc(self.scorel[j])
         
         # Check file is in the right order
-        if int(self.df.loc[0, 'Overall rank']) != 1:
+        if int(self.df.loc[0, 'Overall_rank']) != 1:
             raise IOError('File is not in correct order. Should be ascending \
                           rank')
             
         # Initialize new DataFrame
-        self.columns = ['User id', 'Name', 'Height (m)', 'Weight (kg)', 'Age',
-                        'Region id', 'Region name', 'Affiliate id',
-                        'Overall rank', 'Overall score', 'Overall percentile']
+        self.columns = ['User_id', 'Name', 'Height_(m)', 'Weight_(kg)', 'Age',
+                        'Region_id', 'Region_name', 'Affiliate_id',
+                        'Overall_rank', 'Overall_score', 'Overall_percentile']
         self.columns.extend(new_cols)
         self.cleandata = pd.DataFrame(columns=self.columns)
                 
@@ -96,7 +96,7 @@ class Clean(object):
         start_time = time.time()
         
         # Convert the Userid column to integers and move to self.cleandata
-        self.cleandata.loc[:,'User id'] = self.df.loc[:,'User id'].astype(int)
+        self.cleandata.loc[:,'User_id'] = self.df.loc[:,'User_id'].astype(int)
 
         self.cleandata.loc[:,'Name'] = self.df.loc[:,'Name']       
         
@@ -108,24 +108,24 @@ class Clean(object):
             self.cleandata.loc[:,'Age'] = self.df.loc[:,'Age'].astype(int)
         
         # Convert the Regionid column to integers
-        self.cleandata.loc[:,'Region id'] = \
-        self.df.loc[:,'Region id'].astype(int)
+        self.cleandata.loc[:,'Region_id'] = \
+        self.df.loc[:,'Region_id'].astype(int)
         
-        self.cleandata.loc[:,'Region name'] = self.df.loc[:,'Region name']         
+        self.cleandata.loc[:,'Region_name'] = self.df.loc[:,'Region_name']         
         
         # Convert the Affiliateid to integer
         # Be aware there are 0 values here which indicate no affliate
         # Can't convet to a nan otherwise all other values have to be a float        
-        self.cleandata.loc[:, 'Affiliate id'] = \
-        self.df.loc[:, 'Affiliate id'].astype(int)
+        self.cleandata.loc[:, 'Affiliate_id'] = \
+        self.df.loc[:, 'Affiliate_id'].astype(int)
 
         # Convert the Overallrank column to integers
-        self.cleandata.loc[:, 'Overall rank'] = \
-        self.df.loc[:, 'Overall rank'].astype(int)
+        self.cleandata.loc[:, 'Overall_rank'] = \
+        self.df.loc[:, 'Overall_rank'].astype(int)
         
         # Convert the Overallscore column to integers
-        self.cleandata.loc[:, 'Overall score'] = \
-        self.df.loc[:, 'Overall score'].astype(int)
+        self.cleandata.loc[:, 'Overall_score'] = \
+        self.df.loc[:, 'Overall_score'].astype(int)
         
         # Add an 'Overall percentile' column      
         self._overall_percentile()
@@ -139,8 +139,8 @@ class Clean(object):
             print('Cleaning wod '+wod)
             
             # Convert wod rank to integers
-            self.cleandata.loc[:, wod+' rank'] = \
-            self.df.loc[:, wod+' rank'].values.astype(int)
+            self.cleandata.loc[:, wod+'_rank'] = \
+            self.df.loc[:, wod+'_rank'].values.astype(int)
             
             # Convert score to a pd.Timedelta, integer
             self._extract_score(wod)
@@ -349,7 +349,7 @@ class Clean(object):
         cfopendata : pd.Dataframe
             Crossfit open data with add overall percentile columns.
         """         
-        col = self.df['Overall rank']
+        col = self.df['Overall_rank']
         pct = np.flip(np.round(np.linspace(0, 100, num=len(self.df)),
                                decimals=4), 0)
         # Check for duplications
@@ -401,7 +401,7 @@ class Clean(object):
         cfopendata : pd.Dataframe
             Score are either a pd.Timedelta, integer.
         """
-        df_c_name = wod+' score'
+        df_c_name = wod+'_score'
         s = self.df.loc[:,df_c_name].values.tolist()
        
         # Keep track of the indicies
@@ -453,7 +453,7 @@ class Clean(object):
         cfopendata : pd.Dataframe
             Added percentile column.
         """  
-        df_c_name = wod+' score'
+        df_c_name = wod+'_score'
         _s = self.cleandata.loc[:,df_c_name]
         _s_i = _s[self.ii]
         _s_i_sorted = _s_i.sort_values(ascending=False)
@@ -479,7 +479,7 @@ class Clean(object):
         _df_i_sorted = _s_i_sorted.to_frame(name = df_c_name)
         _df_i_sorted2 = _df_i_sorted.copy()
         _df_i_sorted2 = _df_i_sorted2.rename(
-                columns={wod+' score': wod+' percentile'})
+                columns={wod+'_score': wod+'_percentile'})
         pct = np.transpose(np.expand_dims(pct, axis=0))
         _df_i_sorted2.loc[:] = pct
         # Put back into dataframe index
@@ -488,7 +488,7 @@ class Clean(object):
         pct_vals = _df.values
  
         # Add to self.cleandata
-        self.cleandata.loc[:, wod+' percentile'] = pct_vals
+        self.cleandata.loc[:, wod+'_percentile'] = pct_vals
         return self
 
 
@@ -505,7 +505,7 @@ class Clean(object):
         cfopendata : pd.Dataframe
             Added percentile column.
         """
-        df_c_name = wod+' score'
+        df_c_name = wod+'_score'
         _s = self.cleandata.loc[:,df_c_name]
         # Get timedelta rows
         _s_td = _s[self.tdi]       
@@ -540,7 +540,7 @@ class Clean(object):
         _df_td_sorted = _s_td_sorted.to_frame(name = df_c_name)
         _df_td_sorted2 = _df_td_sorted.copy()
         _df_td_sorted2 = _df_td_sorted2.rename(
-                columns={wod+' score': wod+' percentile'})
+                columns={wod+'_score': wod+'_percentile'})
         pct = np.transpose(np.expand_dims(pct, axis=0))
         _df_td_sorted2.loc[:] = pct
         # Put back into dataframe index
@@ -549,7 +549,7 @@ class Clean(object):
         pct_vals = _df.values
                 
         # Add to self.cleandata
-        self.cleandata.loc[:, wod+' percentile'] = pct_vals
+        self.cleandata.loc[:, wod+'_percentile'] = pct_vals
         return self        
 
 
@@ -617,7 +617,7 @@ class Clean(object):
         total_reps = self.totalreps[ix]
         time_cap = self.timecaps[ix] * 60 # seconds
 
-        df_c_name = wod+' score'
+        df_c_name = wod+'_score'
         _s = self.cleandata.loc[:,df_c_name]
         
         # Get integer rows
@@ -640,7 +640,7 @@ class Clean(object):
         p_time = pd.to_timedelta(p_time, unit='s')
         
         # Add to self.cleandata
-        self.cleandata.loc[:, wod+' predicted time'] = p_time
+        self.cleandata.loc[:, wod+'_predicted_time'] = p_time
         return self
 
 
@@ -682,7 +682,7 @@ class Clean(object):
         total_reps = self.totalreps[ix]
         time_cap = self.timecaps[ix] * 60 # seconds
         
-        df_c_name = wod+' score'
+        df_c_name = wod+'_score'
         _s = self.cleandata.loc[:,df_c_name]
 
         # Get timedelta rows
@@ -702,5 +702,5 @@ class Clean(object):
             p_reps[self.ii] = _s[self.ii].values
             
         # Add to self.cleandata
-        self.cleandata.loc[:, wod+' predicted reps'] = p_reps
+        self.cleandata.loc[:, wod+'_predicted_reps'] = p_reps
         return self

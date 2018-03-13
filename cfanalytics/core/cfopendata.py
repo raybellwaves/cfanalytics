@@ -89,9 +89,9 @@ class Cfopendata(object):
         wod_info = open_wods(self.year)
         self.wodscompleted = int(wod_info['wodscompleted'].values)
         score_cols = wod_info['dfheader'].values
-        self.columns = ['User id', 'Name', 'Height', 'Weight', 'Age',
-                        'Region id', 'Region name', 'Affiliate id',
-                        'Overall rank', 'Overall score']
+        self.columns = ['User_id', 'Name', 'Height', 'Weight', 'Age',
+                        'Region_id', 'Region_name', 'Affiliate_id',
+                        'Overall_rank', 'Overall_score']
         self.columns.extend(score_cols)
         self.data = pd.DataFrame(columns=self.columns)
         empty_df = pd.DataFrame(columns=self.columns) # Initiallized DataFrame
@@ -151,11 +151,11 @@ class Cfopendata(object):
                 
         # For unknown reasons it puts the batch pages ~100 onwards at the start
         # Sort data by 'Overallrank' coloumn
-        self.data['Overall rank'] = self.data['Overall rank'].astype(int)
-        self.data = self.data.sort_values(by=['Overall rank'])        
+        self.data['Overall_rank'] = self.data['Overall_rank'].astype(int)
+        self.data = self.data.sort_values(by=['Overall_rank'])        
         # This doesn't quite match the leaderboard but it shouldn't matter
         # As everyone who is ranked the same overall will have similar stats
-        self.data['Overall rank'] = self.data['Overall rank'].astype(str)
+        self.data['Overall_rank'] = self.data['Overall_rank'].astype(str)
         self.data = self.data.reset_index(drop=True)
         self.data.to_pickle(self.path+'/'+self.dname)
         self.data.to_csv(path_or_buf=self.path+'/'+self.dname+'.csv')
