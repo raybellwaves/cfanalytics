@@ -50,6 +50,10 @@ Documentation
 
 The documentation is hosted at http://cfanalytics.readthedocs.io/
 
+Projects using the data
+-----------------------
+- `Unofficial 2018 Open Results <http://www.rpresidente.com.br/Open2018/Index>`__
+
 Acknowledgements
 ----------------
 
