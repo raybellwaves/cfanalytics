@@ -20,6 +20,8 @@ The version numbers 0.1.X are all development versions as I chip away at the pro
 
 ``pip install git+https://github.com/raybellwaves/cfanalytics``
 
+Make sure you have the optional dependencies installed below for this to work.
+
 The psudo-stable packages are here (but this was more of an exercise for me to the build the packages).
 
 ``conda install -c conda-forge cfanalytics``
@@ -35,6 +37,7 @@ As good practice, I recommend installing with anaconda/miniconda and in a new en
  
     $ conda create -n cfa python=3.6
     $ source activate cfa
+    $ # Install dependencies...
     $ pip install git+https://github.com/raybellwaves/cfanalytics
 
 You can type ``source deactivate`` when finished. You can also check which environments you have created by typing ``conda info --envs``. 
