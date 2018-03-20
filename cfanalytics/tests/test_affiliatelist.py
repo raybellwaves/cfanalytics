@@ -12,6 +12,7 @@ class TestAffiliatelist(TestCase):
                ') AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.13'+\
                '2 Safari/537.36'}
 
+
     def test_get_lat_lons(self):
         expected = 40.3604
         response = requests.get(self.basepath+'/getAllAffiliates.php').json()

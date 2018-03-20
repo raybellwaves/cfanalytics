@@ -24,6 +24,10 @@ class Clean(object):
         -------
         cfopendata : pd.Dataframe
             Cleaned Crossfit open data.
+            
+        Example
+        -------
+        cfa.Clean('Data/Men_Rx_2018_raw')
         """
         self.path = path
         

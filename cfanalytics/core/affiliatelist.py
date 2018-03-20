@@ -28,6 +28,10 @@ class Affiliatelist(object):
         -------
         affiliatelist : pd.Dataframe
             Affiliate data.
+            
+        Example
+        -------
+        cfa.Affiliatelist('Data/')
         """
         # Setup the name of the file to save
         self.dname = 'Affiliate_list'

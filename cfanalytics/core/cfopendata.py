@@ -58,6 +58,10 @@ class Cfopendata(object):
         -------
         cfopendata : pd.Dataframe
             Crossfit open data.
+            
+        Example
+        -------
+        cfa.Cfopendata(2018, 1, 0, 'Data/')
         """
 
         self.year = year
