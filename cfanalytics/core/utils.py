@@ -41,22 +41,25 @@ def open_wods(year):
                 dfcheader.append(_yr+'.'+w+'_predicted_time')
                 dfcheader.append(_yr+'.'+w+'_predicted_reps')                
     else:
-        wodscompleted = 4
-        units = ['reps', 'time/reps', 'weight', 'time/reps']        
-        totalreps = [np.inf, 110, 1, 928] 
-        timecaps = [20, 12, 12, 14]      
-        predictions = [False, True, False, True]
+        wodscompleted = 5
+        units = ['reps', 'time/reps', 'weight', 'time/reps', 'time/reps']        
+        totalreps = [np.inf, 110, 1, 928, 165] 
+        timecaps = [20, 12, 12, 14, 9]      
+        predictions = [False, True, False, True, True]
         dfheader = [_yr+'.1_rank', _yr+'.1_score', _yr+'.2_rank',
                     _yr+'.2_score', _yr+'.2a_rank', _yr+'.2a_score',
-                    _yr+'.3_rank', _yr+'.3_score']
+                    _yr+'.3_rank', _yr+'.3_score', _yr+'.4_rank',
+                    _yr+'.4_score']
         scorel = [_yr+'.1_score', _yr+'.2_score', _yr+'.2a_score',
-                  _yr+'.3_score']
+                  _yr+'.3_score', _yr+'.4_score']
         dfcheader = [_yr+'.1_rank', _yr+'.1_score', _yr+'.1_percentile',
                      _yr+'.2_rank', _yr+'.2_score', _yr+'.2_percentile',
                      _yr+'.2_predicted_time', _yr+'.2_predicted_reps',
                      _yr+'.2a_rank', _yr+'.2a_score', _yr+'.2a_percentile',
                      _yr+'.3_rank', _yr+'.3_score', _yr+'.3_percentile',
-                     _yr+'.3_predicted_time', _yr+'.3_predicted_reps']        
+                     _yr+'.3_predicted_time', _yr+'.3_predicted_reps',
+                     _yr+'.4_rank', _yr+'.4_score', _yr+'.4_percentile',
+                     _yr+'.4_predicted_time', _yr+'.4_predicted_reps'] 
         
     ds['units'] = units
     ds['predictions'] = predictions
