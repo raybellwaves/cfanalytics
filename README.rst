@@ -37,10 +37,9 @@ As good practice, I recommend installing with anaconda/miniconda and in a new en
  
     $ conda create -n cfa python=3.6
     $ source activate cfa
-    $ # Install dependencies...
-    $ # pip install git+https://github.com/raybellwaves/cfanalytics
-    $ # or
-    $ # conda install -c conda-forge cfanalytics matplotlib cartopy
+    $ conda install -c matplotlib cartopy
+    $ pip install git+https://github.com/raybellwaves/cfanalytics
+    $ # eventually: conda install -c conda-forge cfanalytics matplotlib cartopy
 
 You can type ``source deactivate`` when finished. You can also check which environments you have created by typing ``conda info --envs``. 
 To remove an environment type ``conda remove --name cfa --all``.
