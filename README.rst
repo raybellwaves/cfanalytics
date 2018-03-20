@@ -60,7 +60,7 @@ Acknowledgements
 - Thanks to posts on `r/crossfit <https://www.reddit.com/r/crossfit/>`__. e.g. `here <https://www.reddit.com/r/crossfit/comments/5uikq8/2017_open_data_analysis/>`__, I worked out how to download data from the `CrossFit® open <https://games.crossfit.com/leaderboard/open/2017?division=1&region=0&scaled=0&sort=0&occupation=0&page=1>`__. 
 - ``Cfopendata`` is a very minor adaptation from `captamericadevs/CFOpenData <https://github.com/captamericadevs/CFOpenData>`__. Who smartly developed code to download CrossFit® open data using `aiohttp <https://github.com/aio-libs/aiohttp>`__. 
 - ``Affliatelist`` used this `answer <https://stackoverflow.com/questions/33618324/web-scraping-google-map-website-is-it-possible-to-scrape>`__ as well as this `answer <https://stackoverflow.com/questions/49211863/scrape-latitude-and-longitude-of-address-obtained-from-mapbox>`__ on SO. 
-- ``Cfplot().regionplot()`` was made possible by the work of the `cartopy <https://github.com/SciTools/cartopy>`__ developers and `Natural Earth <http://www.naturalearthdata.com/>`__ developers.
+- ``Cfplot().regionplot()`` was made possible by the work of the `cartopy <https://github.com/SciTools/cartopy>`__ developers and developers of `Natural Earth <http://www.naturalearthdata.com/>`__.
 - `xarray <https://github.com/pydata/xarray>`__ developers. Whose package template I used for this package as well as the package itself.
 
 Disclaimer
