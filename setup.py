@@ -9,5 +9,5 @@ setup(name='cfanalytics',
       url='https://github.com/raybellwaves/cfanalytics',
       packages=find_packages(),
       install_requires=['requests', 'aiohttp', 'pandas', 'numpy', 'xarray',
-                        'matplotlib','cartopy','cython'],
+                        'matplotlib','cython','cartopy'],
       python_requires='>=3.6')
