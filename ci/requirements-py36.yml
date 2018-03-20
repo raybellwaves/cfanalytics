@@ -8,5 +8,7 @@ dependencies:
   - pandas
   - numpy
   - xarray
+  - matplotlib
+  - cartopy
   - coveralls
   - pytest-cov
