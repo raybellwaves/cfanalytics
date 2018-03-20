@@ -40,6 +40,7 @@ class Cfplot(object):
     def regionplot(self, column=None, how=None):
         """Create a plot showing a map of the world with data averaged in
         regions.
+        https://games.crossfit.com/article/change-coming-2018-season/liftoff
         The regioins are given here:
         https://games-support.crossfit.com/article/100-what-are-the-boundaries\
         -of-the-crossfit-games-regions-what-states-countries-are-included-in-\
@@ -291,10 +292,6 @@ class Cfplot(object):
             plt.text(self.lonloc, self.latloc, self.reg_plot_str,
                      color=self.strcol, fontsize=10, weight='bold',
                      transform=ccrs.PlateCarree())
-                
-        # Plot South America last to force French Guinea not to be the same
-        # color as Europe South
-        # Find index of South America
 
         self.ax.coastlines(resolution='10m')
         plt.title(self.path+' | '+self.column+' | '+self.how)
@@ -575,17 +572,16 @@ class Cfplot(object):
                           'Bhutan','Sri Lanka','Myanmar','Thailand','Lao PDR',
                           'Vietnam','Cambodia','Dem. Rep. Korea',
                           'Republic of Korea','Japan','Taiwan','Philippines',
-                          'Malaysia','Brunei','Indonesia','Tomsk',
-                          'Chukchi Autonomous Okrug','Chelyabinsk','Kurgan',
-                          'Yamal-Nenets','Sverdlovsk','Khanty-Mansiy','Omsk',
-                          "Tyumen'",'Altay','Gorno-Altay','Kemerovo','Khakass',
-                          'Novosibirsk','Evenk','Irkutsk','Krasnoyarsk',
-                          'Taymyr','Tuva','Buryat','Ust-Orda Buryat',
-                          'Aga Buryat','Amur','Chita',"Primor'ye",'Chukot',
-                          'Yevrey','Khabarovsk','Maga Buryatdan','Sakhalin',
-                          'Kamchatka']
-        # Get geometries
+                          'Malaysia','Brunei','Indonesia','Azerbaijan']
         self._get_geoms('admin_0_countries', 'NAME_LONG')
+        self.loc_names = ['Tomsk','Chukchi Autonomous Okrug','Chelyabinsk',
+                          'Kurgan','Yamal-Nenets','Sverdlovsk','Khanty-Mansiy',
+                          'Omsk',"Tyumen'",'Altay','Gorno-Altay','Kemerovo',
+                          'Khakass','Novosibirsk','Evenk','Irkutsk',
+                          'Krasnoyarsk','Taymyr','Tuva','Buryat',
+                          'Ust-Orda Buryat','Aga Buryat','Amur','Chita',
+                          "Primor'ye",'Chukot','Yevrey','Khabarovsk',
+                          'Maga Buryatdan','Sakhalin','Kamchatka']
         self._get_geoms('admin_1_states_provinces_shp', 'name')       
 
         # Workout string color
@@ -646,9 +642,22 @@ class Cfplot(object):
                           "Astrakhan'",'Chuvash','Kalmyk','Orenburg','Samara',
                           'Saratov','Tatarstan',"Ul'yanovsk",'Chechnya',
                           'Dagestan','Murmansk','Komi-Permyak',"Perm'"]
-        # Get geometries
         self._get_geoms('admin_0_countries', 'NAME_LONG')
+        self.loc_names = ['Kaliningrad']        
         self._get_geoms('admin_0_map_subunits', 'NAME_LONG')
+        self.loc_names = ['Komi','Leningrad','City of St. Petersburg','Adygey',
+                          'Karachay-Cherkess','Ingush','Kabardin-Balkar',
+                          'North Ossetia',"Stavropol'",'Murmansk','Novgorod',
+                          'Pskov','Bryansk','Smolensk','Karelia',
+                          "Arkhangel'sk",'Ivanovo','Kostroma','Nizhegorod',
+                          "Tver'",'Vologda',"Yaroslavl'",'Kaluga','Kursk',
+                          'Lipetsk','Moskovsskaya','Moskva','Orel','Rostov',
+                          'Tula','Volgograd','Belgorod','Krasnodar','Mordovia',
+                          'Penza',"Ryazan'",'Tambov','Vladimir','Voronezh',
+                          'Bashkortostan','Nenets','Kirov','Mariy-El','Udmurt',
+                          "Astrakhan'",'Chuvash','Kalmyk','Orenburg','Samara',
+                          'Saratov','Tatarstan',"Ul'yanovsk",'Chechnya',
+                          'Dagestan','Murmansk','Komi-Permyak',"Perm'"]        
         self._get_geoms('admin_1_states_provinces_shp', 'name')
 
         self._get_str_col()
@@ -670,7 +679,7 @@ class Cfplot(object):
         self.loc_names = ['Andorra','Switzerland','Cyprus','Spain','France',
                           'Guernsey','Gibraltar','Italy','Jersey','Monaco',
                           'Malta','Montenegro','Portugal','San Marino',
-                          'Turkey','Vatican']
+                          'Turkey','Vatican','Georgia','Armenia']
         # Get geometries
         self._get_geoms('admin_0_countries', 'NAME_LONG')        
 
@@ -786,6 +795,7 @@ class Cfplot(object):
                           'Argentina','Chile','French Guiana']
         # Get geometries
         self._get_geoms('admin_0_countries', 'NAME_LONG')
+        self.loc_names = ['French Guiana']        
         self._get_geoms('admin_0_map_units', 'NAME_LONG')        
 
         # Workout string color
@@ -842,7 +852,7 @@ class Cfplot(object):
         """
         cnum = len(self.ds_sorted.coords['regions']) - self.regcount - 1
         # Use black for middle colors
-        if cnum > 6 and cnum < 12:
+        if cnum > 7 and cnum < 11:
             self.strcol = 'black'
         else:
             self.strcol = self.colors[cnum]
