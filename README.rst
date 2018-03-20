@@ -16,15 +16,11 @@ CrossFit® workouts. The goal is to enhance data-driven performance of athletes.
 Installing
 ----------
 
-The version numbers 0.1.X are all development versions as I chip away at the project on here in my spare time. I occasionally build the package if i've finished something large. But you can grab the least-buggy version of this package by typing:
-
-``pip install git+https://github.com/raybellwaves/cfanalytics``
-
-The psudo-stable packages are here (but this was more of an exercise for me to the build the packages).
+The version numbers 0.1.X are all development versions as I chip away at the project on here in my spare time. I occasionally build the package if i've finished something large. It is recommended you install the package using:
 
 ``conda install -c conda-forge cfanalytics``
 
-``pip install cfanalytics``
+Although the version on conda-forge may be an old version in these early stages.
 
 As a precautionary note, it has been developed entirely on Mac OSX using Python installed with `anaconda <https://anaconda.org/anaconda/python>`__. Therefore, use in Windows and Linux at your 
 own peril.

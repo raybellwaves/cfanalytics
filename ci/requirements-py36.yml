@@ -9,7 +9,6 @@ dependencies:
   - numpy
   - xarray
   - matplotlib
-  - cython
   - cartopy
   - coveralls
   - pytest-cov
