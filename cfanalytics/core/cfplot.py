@@ -141,7 +141,7 @@ class Cfplot(object):
         # Data analysis method        
         if self.how[0] == 'P':
             # Percentile method
-            percentile_val = int(self.how.split('P')[-1])/100.
+            percentile_val = float(self.how.split('P')[-1])/100.
             ds[self.how].values = \
             da.quantile(percentile_val, dim='athletes').astype(int)
             
