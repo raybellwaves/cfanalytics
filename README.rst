@@ -42,8 +42,9 @@ To remove an environment type ``conda remove --name cfa --all``.
 
 Optional dependencies
 ---------------------
- - `matplotlib <https://matplotlib.org/>`__: for plotting.
- - `cartopy <https://github.com/SciTools/cartopy>`__: for plotting.
+
+- `matplotlib <https://matplotlib.org/>`__: for plotting.
+- `cartopy <https://github.com/SciTools/cartopy>`__: for plotting.
 
 Examples
 --------
@@ -57,6 +58,7 @@ The documentation is hosted at http://cfanalytics.readthedocs.io/
 
 Projects using this data
 ------------------------
+
 - `Unofficial 2018 Open Results <http://www.rpresidente.com.br/Open2018/Index>`__
 
 Acknowledgements
