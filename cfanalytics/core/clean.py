@@ -340,7 +340,7 @@ class Clean(object):
                 nw[i] = round(int(w[i].split(' ')[0]) / 2.2046 )
             elif w[i].endswith('g'):
                 nw[i] = round(int(w[i].split(' ')[0]))
-            elif h[i].endswith('lb'):
+            elif w[i].endswith('lb'):
                 nw[i] = round(int(w[i].split(' ')[0]) / 2.2046 )
             else:
                 nw[i] = np.nan
