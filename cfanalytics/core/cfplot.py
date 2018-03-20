@@ -205,6 +205,23 @@ class Cfplot(object):
                   ds_sorted['natheltes'].values[i],',',
                   round(ds_sorted[self.how].values[i],1))
         self.ds_sorted = ds_sorted
+        # Print reddit table format
+        print('')
+        print('Rank|Region|Number of athletes in region|'+\
+              self.column+ ' '+self.how)
+        for i in range(0, len(ds_sorted.coords['regions'])):
+            print(str(i+1)+'|'+ds_sorted.coords['regions'].values[i]+'|'+\
+                  str(ds_sorted['natheltes'].values[i])+'|'+\
+                  str(round(ds_sorted[self.how].values[i],1)))
+        # Print in order of region size
+        print('')
+        _tmp = ds.sortby('natheltes')
+        print('rank, region, nathletes, '+self.how)
+        for i in range(0, len(_tmp.coords['regions'])):
+            print(i+1,',',_tmp.coords['regions'].values[i],',',
+                  _tmp['natheltes'].values[i],',',
+                  round(_tmp[self.how].values[i],1))        
+        return self
         
 
     def _plot_regs(self):
