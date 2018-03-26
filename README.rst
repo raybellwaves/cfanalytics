@@ -13,7 +13,7 @@ cfanalytics: Downloading, analyzing and visualizing CrossFit data
 **cfanalytics** is an open source project and Python package that aims to provide analyzes to 
 CrossFit® workouts. The goal is to enhance data-driven performance of athletes.
 
-
+.. image:: https://github.com/raybellwaves/cfanalytics/blob/master/Plots/Men_Rx_2018_18.4_rank_P0.1.png
 
 Installing
 ----------
