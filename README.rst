@@ -40,8 +40,8 @@ As good practice, I recommend installing with anaconda/miniconda and in a new en
  
     $ conda create -n cfa python=3.6
     $ source activate cfa
-    $ conda install -c matplotlib cartopy joblib
-    $ pip intall motionless
+    $ conda install -c matplotlib cartopy joblib netcdf4
+    $ pip install motionless
     $ pip install git+https://github.com/fmaussion/salem.git
     $ pip install git+https://github.com/raybellwaves/cfanalytics
     $ # eventually: conda install -c conda-forge cfanalytics matplotlib cartopy
