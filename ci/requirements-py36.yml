@@ -16,4 +16,4 @@ dependencies:
   - pytest-cov
   - pip:
     - motionless
-    - salem
+    - git+https://github.com/fmaussion/salem.git
