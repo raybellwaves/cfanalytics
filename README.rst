@@ -40,18 +40,21 @@ As good practice, I recommend installing with anaconda/miniconda and in a new en
  
     $ conda create -n cfa python=3.6
     $ source activate cfa
-    $ conda install -c matplotlib cartopy
+    $ conda install -c matplotlib cartopy joblib
+    $ pip intall motionless
+    $ pip install git+https://github.com/fmaussion/salem.git
     $ pip install git+https://github.com/raybellwaves/cfanalytics
     $ # eventually: conda install -c conda-forge cfanalytics matplotlib cartopy
 
 You can type ``source deactivate`` when finished. You can also check which environments you have created by typing ``conda info --envs``. 
 To remove an environment type ``conda remove --name cfa --all``.
 
-Optional dependencies
----------------------
+Optional dependencies (fot plotting)
+------------------------------------
 
-- `matplotlib <https://matplotlib.org/>`__: for plotting.
-- `cartopy <https://github.com/SciTools/cartopy>`__: for plotting.
+- `matplotlib <https://github.com/matplotlib/matplotlib>`__
+- `cartopy <https://github.com/SciTools/cartopy>`__
+- `salem <https://github.com/fmaussion/salem>`__ and it's dependencies
 
 Examples
 --------
@@ -75,6 +78,7 @@ Acknowledgements
 - ``Cfopendata`` is a very minor adaptation from `captamericadevs/CFOpenData <https://github.com/captamericadevs/CFOpenData>`__. Who smartly developed code to download CrossFit® open data using `aiohttp <https://github.com/aio-libs/aiohttp>`__. 
 - ``Affliatelist`` used this `answer <https://stackoverflow.com/questions/33618324/web-scraping-google-map-website-is-it-possible-to-scrape>`__ as well as this `answer <https://stackoverflow.com/questions/49211863/scrape-latitude-and-longitude-of-address-obtained-from-mapbox>`__ on SO. 
 - ``Cfplot().regionplot()`` was made possible by the work of the `cartopy <https://github.com/SciTools/cartopy>`__ developers and developers of `Natural Earth <http://www.naturalearthdata.com/>`__.
+- ``Cfplot().cityplot()`` was made possible by the work by `fmaussion <https://github.com/fmaussion>`__ in `salem <https://github.com/fmaussion/salem>`__
 - `xarray <https://github.com/pydata/xarray>`__ developers. Whose package template I used for this package as well as the package itself.
 
 Disclaimer
