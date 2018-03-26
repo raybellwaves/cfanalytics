@@ -8,9 +8,12 @@ import cartopy.crs as ccrs
 import cartopy.io.shapereader as shapereader
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+from salem import GoogleVisibleMap, Map
 
 
 import math
+import os
+import sys
 
 
 class Cfplot(object):
@@ -27,7 +30,7 @@ class Cfplot(object):
             
         Returns
         -------
-        ? : ?
+        matplotlib.pyplot.figure : matplotlib.pyplot.figure
             Creates Crossfit plot.
         """
         self.path = path
@@ -35,7 +38,15 @@ class Cfplot(object):
         self.year = int(str(self.path[-4:]))
         if int(self.year) < 2018:
             raise ValueError('This is only tested on 2018')
-        
+        # Check you can read in the Affiliate_list
+        self._dir = '/'+'/'.join(self.path.split('/')[1:-1])+'/'
+        print(self._dir)
+        # Create a Plot directory
+        self.plotdir = '/'+'/'.join(self.path.split('/')[1:-2])+'/'+'Plots/'
+        if not os.path.isdir(self.plotdir):
+            os.makedirs(self.plotdir)        
+        self.fname = self.path.split('/')[-1]        
+
         
     def regionplot(self, column=None, how=None):
         """Create a plot showing a map of the world with data averaged in
@@ -90,18 +101,17 @@ class Cfplot(object):
             Must be X_rank.
         how : string
             Name of method to analyze the data.
-            P5 : 5th percentile.
-            min : Minimum value (TO DO. Check if same as P0)
+            P0.01 : 0.01th percentile.
             
         Returns
         -------
         matplotlib.pyplot.figure : matplotlib.pyplot.figure
-            Creates Crossfit plot.
+            Creates regional plot.
             
         Example
         -------
         cfa.Cfplot('Men_Rx_2018').regionplot(column='Overall_rank', how='P5')
-        """
+        """            
         # If column and how are not provided use 'Overall_rank' and 'P5'
         if column is None:
             self.column = 'Overall_rank'
@@ -158,7 +168,7 @@ class Cfplot(object):
             
         Returns
         -------
-        rself.reg_dict : dict
+        self.reg_dict : dict
             Region id's and names.
         """
         self.reg_dict = {5:"Canada_West",
@@ -197,7 +207,8 @@ class Cfplot(object):
             Sorted dataset.
         """
         ds_sorted = ds.sortby(ds[self.how])
-        print(self.path)        
+        print('Printing results for...')
+        print(self.fname)        
         print(self.column)
         print('rank, region, nathletes, '+self.how)
         for i in range(0, len(ds_sorted.coords['regions'])):
@@ -205,8 +216,8 @@ class Cfplot(object):
                   ds_sorted['natheltes'].values[i],',',
                   round(ds_sorted[self.how].values[i],1))
         self.ds_sorted = ds_sorted
-        # Print reddit table format
         print('')
+        print('Printing results in reddit table format...')
         print('Rank | Region | Number of athletes in region | '+\
               self.column+ ' '+self.how)
         print('---- | ------ | ---------------------------- | --------------')
@@ -214,9 +225,9 @@ class Cfplot(object):
             print(str(i+1)+' | '+ds_sorted.coords['regions'].values[i]+' | '+\
                   str(ds_sorted['natheltes'].values[i])+' | '+\
                   str(round(ds_sorted[self.how].values[i],1)))
-        # Print in order of region size
         print('')
         _tmp = ds.sortby('natheltes')
+        print('Printing results in order of region size...')
         print('rank, region, nathletes, '+self.how)
         for i in range(0, len(_tmp.coords['regions'])):
             print(i+1,',',_tmp.coords['regions'].values[i],',',
@@ -226,7 +237,7 @@ class Cfplot(object):
         
 
     def _plot_regs(self):
-        """Plot the analysis.
+        """Plot the regional analysis.
         
         Parameters
         ----------
@@ -240,7 +251,7 @@ class Cfplot(object):
         """
         # Create a color array of size len(regions)
         # Could add colortype as input
-        self.colors = cm.viridis(np.linspace(0,1,
+        self.colors = cm.nipy_spectral(np.linspace(0,1,
             len(self.ds_sorted.coords['regions'])))
         
         # Setup plot
@@ -312,10 +323,12 @@ class Cfplot(object):
                      transform=ccrs.PlateCarree())
 
         self.ax.coastlines(resolution='10m')
-        plt.title(self.path+' | '+self.column+' | '+self.how)
-        plt.savefig(self.path+'_'+self.column+'_'+self.how+'.png',
-                    bbox_inches = 'tight')
-        # High-res figure but huge (Mb's)
+        plt.title(self.fname+' | '+self.column+' | '+self.how)
+        plt.savefig(self.plotdir+self.fname+'_'+self.column+'_'+self.how+\
+                    '.png', bbox_inches = 'tight')
+        # Full res figure but huge (Mb's)
+        #plt.savefig(self.plotdir+self.fname+'_'+self.column+'_'+self.how+\
+        #            '.png', bbox_inches = 'tight', format='eps')
         #plt.savefig(self.path+'_'+self.column+'_'+self.how+'.eps',
         #            bbox_inches = 'tight', format='eps')        
         plt.show()
@@ -875,3 +888,283 @@ class Cfplot(object):
         else:
             self.strcol = self.colors[cnum]
         return self
+    
+    
+    def cityplot(self, city=None, column=None, how=None):
+        """Create a plot showing a map of the city with data for each gym.
+        
+        Parameters
+        ----------
+        city : string
+            Name of the city.
+            Check if the city is in https://github.com/raybellwaves/cfanalytic\
+            s/blob/master/Data/Affiliate_list.csv
+        column : string
+            Name of column in the file.
+            Must be X_rank.
+        how : string
+            Name of method to analyze the data.
+            P0 : 5th percentile.
+            
+        Returns
+        -------
+        matplotlib.pyplot.figure : matplotlib.pyplot.figure
+            Creates Crossfit city plot.
+            
+        Example
+        -------
+        cfa.Cfplot('Men_Rx_2018').cityplot(city='Miami', column='Overall_rank',
+        ...                                how='P0')
+        """
+        if city is None:
+            raise ValueError('Must enter city.')           
+        self.city = city
+        
+        # If column and how are not provided use 'Overall_rank' and 'P0'
+        if column is None:
+            self.column = 'Overall_rank'
+        else:
+            self.column = column
+        if how is None:
+            self.how = 'P0'
+        else:
+            self.how = how
+        
+        # Make sure a X_rank column was entered
+        if self.column.split('_')[-1] != 'rank':
+            raise ValueError('Column should be a rank column.')
+            
+        # Get cities where gyms are located
+        self._get_city_gyms()        
+        
+        # Create xr.DataArray to store the ranks
+        da = xr.DataArray(np.full((len(self.df_gyms), 2000),
+                                  np.nan, dtype=np.double),
+            coords=[self.df_gyms['Affiliate_name'].values,
+                    np.arange(2000)],
+            dims=['gyms','athletes'])
+        # Fill with data for each gym
+        for i, gym_id in enumerate(self.df_gyms['Affiliate_name'].values):
+            row = self.df_gyms[
+                    self.df_gyms['Affiliate_name'] == gym_id]
+            aid = row['Affiliate_id'].values
+            df = self.df.query('Affiliate_id =='+str(aid))
+            da.loc[gym_id, 0:len(df)-1] = df[self.column].values
+        # Drop gyms where no one entered the open
+        da = da.dropna('gyms', how='all')
+        # Update self.df_gyms with only these gyms
+        self.df_gyms = self.df_gyms.loc[
+                self.df_gyms['Affiliate_name'].isin(da.coords['gyms'].values)]       
+
+        # Some gyms don't have latitude and longitude. Drop these
+        i = np.where(self.df_gyms['Latitude'].values == '')
+        da.loc[self.df_gyms['Affiliate_name'].values[i], :] = np.nan
+        da = da.dropna('gyms', how='all')
+        # Update self.df_gyms with only these gyms
+        self.df_gyms = self.df_gyms.loc[
+                self.df_gyms['Affiliate_name'].isin(da.coords['gyms'].values)]
+
+        # Create a data array for athelete names
+        mol_ext = list()
+        _da = da.copy(deep=True).astype(str)
+        for i, gym_id in enumerate(self.df_gyms['Affiliate_name'].values):
+            row = self.df_gyms[
+                    self.df_gyms['Affiliate_name'] == gym_id]
+            aid = row['Affiliate_id'].values[0]
+            mol_ext.append(str(aid))
+            df = self.df.query('Affiliate_id =='+str(aid))
+            _da.loc[gym_id, 0:len(df)-1] = df['Name'].values
+        # Print url for Matt Kruse's awesome site
+        mol_ur = 'http://myopenleaderboard.com/?'+",".join(mol_ext)
+        print('')
+        print('Printing url to check the results on myopenleaderboard.com...')        
+        print(mol_ur)
+        print('')
+
+        # Create a data array for nthletes        
+        _da2 = da[:,0].copy(deep=True).drop('athletes')       
+        _da2.values = np.count_nonzero(~np.isnan(da.values), axis=1)
+        
+        # Create a data array for address        
+        _da3 = _da[:,0].copy(deep=True)
+        # Create a data array for website
+        _da4 = _da3.copy(deep=True)
+        # Create a data array for phone
+        _da5 = _da3.copy(deep=True)        
+        # Create a data array for lat
+        _da6 = da[:,0].copy(deep=True).drop('athletes')
+        # Create a data array for lon
+        _da7 = _da6.copy(deep=True)
+        for index, row in self.df_gyms.iterrows():
+            _da3.loc[row['Affiliate_name']] = row['Address']
+            _da4.loc[row['Affiliate_name']] = row['Website']
+            _da5.loc[row['Affiliate_name']] = row['Phone']           
+            _da6.loc[row['Affiliate_name']] = row['Latitude']
+            _da7.loc[row['Affiliate_name']] = row['Longitude']
+            
+        # Print out extent of city map
+        #print(_da7.min(), _da7.max(), _da6.min(), _da6.max())
+        #sys.exit()
+
+        # Create xr.Dataset of all the data
+        #ds = xr.Dataset({self.column:da, 'athlete_names':_da, 'nathletes':_da2,
+        #                 'address':_da3, 'website':_da4, 'phone':_da5,
+        #                 'latitude':_da6, 'longitude':_da7})
+        # Create xr.Dataset of data to plot
+        ds = xr.Dataset({self.how:da[:,0].drop('athletes'), 
+                          'athlete_names':_da[:,0].drop('athletes'),
+                          'address':_da3, 'website':_da4, 'phone':_da5,
+                          'latitude':_da6, 'longitude':_da7})
+
+        # Data analysis method        
+        if self.how[0] == 'P':
+            # Percentile method
+            percentile_val = float(self.how.split('P')[-1])/100.
+            if percentile_val != 0.0:
+                raise ValueError('Only how=P0 implemented.')            
+            if percentile_val > 0.0:
+                # Drop 'athlete_names' data array
+                ds = ds.drop('athlete_names')
+            ds[self.how].values = \
+            da.quantile(percentile_val, dim='athletes').astype(int)
+
+        # Print the data
+        self._show_city_data(ds)
+        
+        # Plot the data
+        self._plot_city(self.ds_sorted)        
+
+           
+    def _get_city_gyms(self):
+        """Return a Dataframe of the gyms in the specificed city.
+        This is obtained from https://github.com/raybellwaves/cfanalytics/blob\
+        /master/Data/Affiliate_list.csv
+            
+        Returns
+        -------
+        self.df_gyms : pd.Dataframe
+            Gyms in the city and other info.
+        """
+        if not os.path.isfile(self._dir+'Affiliate_list'):
+            raise OSError('Affiliate_list must be in the same directory as the\
+                          open data: '+self._dir)
+        df_affiliate = pd.read_pickle(self._dir+'Affiliate_list')
+        
+        # What is the maximum number of gyms in a city
+        #_df = df_affiliate['City']
+        #unique, counts = np.unique(_df.values,
+        #                           return_counts=True)
+        #print(unique[np.argmax(counts)])
+        
+        # Obtain city column
+        cities = df_affiliate.loc[:,'City'].values
+        
+        # Check if self.city is in cities
+        if not self.city in cities:
+            raise ValueError('city: '+self.city+' is not in Affiliate_list')
+        
+        # Get gyms in the city
+        df_gyms = df_affiliate.loc[df_affiliate['City'] == self.city]
+        # The city could be located in multiple countries
+        # Keep those that are most frequeny in a country
+        # If this does not work for other cities 
+        # revist it and maybe add country as an input
+        # Check how many countries there are:
+        unique, counts = np.unique(df_gyms.loc[:,'Country'].values,
+                                   return_counts=True)
+        if len(unique) > 1:
+            ix = np.argmax(counts)
+            df_gyms = df_gyms.loc[df_affiliate['Country'] == unique[ix]]
+        self.df_gyms = df_gyms
+        return self
+
+
+    def _show_city_data(self, ds):
+        """Print the data.
+        
+        Parameters
+        ----------
+        ds : xr.Dataset
+            xr.Dataset with city analysis results.
+            Coordinates: gyms.
+            
+        Returns
+        -------
+        sorted : xr.Dataset
+            Sorted dataset.
+        """
+        ds_sorted = ds.sortby(ds[self.how])
+        print('Printing results for...')
+        print(self.fname)
+        print(self.city)
+        print(self.column)
+        if self.how == 'P0':
+            print('rank, name, gym, '+self.how)
+        for i in range(0, len(ds_sorted.coords['gyms'])):
+            print(i+1,',',ds_sorted['athlete_names'].values[i],',',
+                  ds_sorted.coords['gyms'].values[i],',',
+                  ds_sorted[self.how].values[i])
+        self.ds_sorted = ds_sorted
+        print('')
+        print('Printing results in reddit table format...')
+        print('Rank | Name | Gym | '+self.column+' '+self.how)
+        print('---- | ---- | --- | ---------------')
+        for i in range(0, len(ds_sorted.coords['gyms'])):
+            print(str(i+1)+' | '+ds_sorted['athlete_names'].values[i]+' | '+\
+                  ds_sorted.coords['gyms'].values[i]+' | '+\
+                  str(ds_sorted[self.how].values[i]))      
+        return self
+
+
+    def _plot_city(self, ds):
+        """Plot the results of gyms in a city.
+        
+        Parameters
+        ----------
+        self.ds_sorted : xr.Dataset
+            xr.Dataset with Coordinates: gyms.
+            
+        Returns
+        -------
+        matplotlib.pyplot.figure : matplotlib.pyplot.figure
+            Creates city plot.        
+        """
+        # Create extend of map [W, E, S, N]
+        extent = [ds['longitude'].values.min(), ds['longitude'].values.max(),
+                  ds['latitude'].values.min(), ds['latitude'].values.max()]
+
+        # Setup colors
+        colors = cm.nipy_spectral(np.linspace(0,1,len(ds['gyms'])))
+        
+        # Get google map. Scale is for more details. Mapytype can have
+        # terrain' or 'satellite'
+        g = GoogleVisibleMap(x=[extent[0], extent[1]], y=[extent[2],
+                                extent[3]], scale=4, maptype='terrain')
+        ggl_img = g.get_vardata()
+        
+        # Plot map
+        fig, ax = plt.subplots(1, 1, figsize=(20,20))
+        sm = Map(g.grid, factor=1, countries=False)
+        sm.set_rgb(ggl_img)
+        sm.visualize(ax=ax)
+        # Plot gym points
+        for i in range(0, len(ds['gyms'])):
+            # Create label
+            self.regcount = i
+            self._rank() # Add self.rank
+            _label = self.rank+' '+ds['gyms'].values[i]+': '+\
+            ds['athlete_names'].values[i]+' ('+str(ds[self.how].values[i])+')'
+            x, y = sm.grid.transform(ds['longitude'].values[i],
+                                     ds['latitude'].values[i])
+            ax.scatter(x, y, color=colors[i], s=400, label=_label)
+        plt.title(self.fname+' | '+self.city+' | '+self.column+' | '+self.how)
+
+        # Shrink current axis by 20% to make room for legend
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        
+        plt.savefig(self.plotdir+self.fname+'_'+self.city+'_'+self.column+\
+                    self.how+'.png', bbox_inches = 'tight')
+        #plt.savefig(self.plotdir+self.fname+'_'+self.city+'_'+self.column+\
+        #            self.how+'.png', bbox_inches = 'tight', format='eps')
