@@ -2,6 +2,9 @@ cfanalytics
 -----------
 
 Create a new environment to create the examples:
+
+.. parsed-literal:: 
+
     $ conda create -n cfa_eg python=3.6
     $ source activate cfa_eg
     $ conda install -c matplotlib cartopy joblib netcdf4
