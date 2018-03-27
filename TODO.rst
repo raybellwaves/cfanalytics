@@ -8,6 +8,7 @@ Code
 ----
 - Update ``Cfopendata`` example and create a ``Clean`` example. 
 - Write documentation for online and eventually run the examples in the docs.
+- ``Cfplot(df).cityplot()`` Could add state input to stop picking up other states or look for the most popular like you did for countries https://github.com/raybellwaves/cfanalytics/blob/master/cfanalytics/core/cfplot.py#L1064
 
 Data
 ----
