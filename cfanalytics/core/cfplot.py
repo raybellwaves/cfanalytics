@@ -1164,7 +1164,7 @@ class Cfplot(object):
         ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         
-        plt.savefig(self.plotdir+self.fname+'_'+self.city+'_'+self.column+\
+        plt.savefig(self.plotdir+self.fname+'_'+self.city+'_'+self.column+'_'+\
                     self.how+'.png', bbox_inches = 'tight')
         #plt.savefig(self.plotdir+self.fname+'_'+self.city+'_'+self.column+\
         #            self.how+'.png', bbox_inches = 'tight', format='eps')
