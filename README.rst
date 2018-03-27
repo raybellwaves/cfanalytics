@@ -16,7 +16,7 @@ cfanalytics: Downloading, analyzing and visualizing CrossFit data
 CrossFit® workouts. The goal is to enhance data-driven performance of athletes.
 
 .. image:: https://github.com/raybellwaves/cfanalytics/blob/master/Plots/Men_Rx_2018_Overall_rank_P0.1.png
-.. image:: https://github.com/raybellwaves/cfanalytics/blob/master/Plots/Men_Rx_2018_Miami_Overall_rankP0.png
+.. image:: https://github.com/raybellwaves/cfanalytics/blob/master/Plots/Women_Rx_2018_Miami_Overall_rankP0.png
 
 Installing
 ----------

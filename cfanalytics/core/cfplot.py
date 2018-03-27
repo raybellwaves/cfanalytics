@@ -13,7 +13,6 @@ from salem import GoogleVisibleMap, Map
 
 import math
 import os
-import sys
 
 
 class Cfplot(object):
@@ -328,9 +327,7 @@ class Cfplot(object):
                     '.png', bbox_inches = 'tight')
         # Full res figure but huge (Mb's)
         #plt.savefig(self.plotdir+self.fname+'_'+self.column+'_'+self.how+\
-        #            '.png', bbox_inches = 'tight', format='eps')
-        #plt.savefig(self.path+'_'+self.column+'_'+self.how+'.eps',
-        #            bbox_inches = 'tight', format='eps')        
+        #            '.png', bbox_inches = 'tight', format='eps')        
         plt.show()
 
 
@@ -1168,3 +1165,4 @@ class Cfplot(object):
                     self.how+'.png', bbox_inches = 'tight')
         #plt.savefig(self.plotdir+self.fname+'_'+self.city+'_'+self.column+\
         #            self.how+'.png', bbox_inches = 'tight', format='eps')
+        plt.show()
