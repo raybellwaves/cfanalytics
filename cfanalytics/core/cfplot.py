@@ -39,7 +39,6 @@ class Cfplot(object):
             raise ValueError('This is only tested on 2018')
         # Check you can read in the Affiliate_list
         self._dir = '/'+'/'.join(self.path.split('/')[1:-1])+'/'
-        print(self._dir)
         # Create a Plot directory
         self.plotdir = '/'+'/'.join(self.path.split('/')[1:-2])+'/'+'Plots/'
         if not os.path.isdir(self.plotdir):
@@ -887,7 +886,7 @@ class Cfplot(object):
         return self
     
     
-    def cityplot(self, city=None, column=None, how=None):
+    def cityplot(self, city=None, state=None, column=None, how=None):
         """Create a plot showing a map of the city with data for each gym.
         
         Parameters
@@ -896,6 +895,8 @@ class Cfplot(object):
             Name of the city.
             Check if the city is in https://github.com/raybellwaves/cfanalytic\
             s/blob/master/Data/Affiliate_list.csv
+        state : string
+            If US, two letter string e.g. SC is South Carolina
         column : string
             Name of column in the file.
             Must be X_rank.
@@ -916,7 +917,8 @@ class Cfplot(object):
         if city is None:
             raise ValueError('Must enter city.')           
         self.city = city
-        
+
+        self.state = state
         # If column and how are not provided use 'Overall_rank' and 'P0'
         if column is None:
             self.column = 'Overall_rank'
@@ -1062,16 +1064,22 @@ class Cfplot(object):
         
         # Get gyms in the city
         df_gyms = df_affiliate.loc[df_affiliate['City'] == self.city]
+
+        # Old method... remove eventually...
         # The city could be located in multiple countries
         # Keep those that are most frequeny in a country
         # If this does not work for other cities 
         # revist it and maybe add country as an input
         # Check how many countries there are:
-        unique, counts = np.unique(df_gyms.loc[:,'Country'].values,
-                                   return_counts=True)
-        if len(unique) > 1:
-            ix = np.argmax(counts)
-            df_gyms = df_gyms.loc[df_affiliate['Country'] == unique[ix]]
+        #unique, counts = np.unique(df_gyms.loc[:,'Country'].values,
+        #                           return_counts=True)
+        #if len(unique) > 1:
+        #    ix = np.argmax(counts)
+        #    df_gyms = df_gyms.loc[df_affiliate['Country'] == unique[ix]]
+            
+        if self.state is not None:
+            df_gyms = df_gyms.loc[df_gyms['State'] == self.state]
+
         self.df_gyms = df_gyms
         return self
 
