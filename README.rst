@@ -56,7 +56,7 @@ Optional dependencies (fot plotting)
 
 - `matplotlib <https://github.com/matplotlib/matplotlib>`__
 - `cartopy <https://github.com/SciTools/cartopy>`__
-- `salem <https://github.com/fmaussion/salem>`__ and it's dependencies
+- `salem <https://github.com/fmaussion/salem>`__ and its dependencies
 
 Examples
 --------
@@ -72,7 +72,7 @@ Projects using this data
 ------------------------
 
 - `Unofficial 2018 Open Results <http://www.rpresidente.com.br/Open2018/Index>`__
-- `View a map of the results <https://app.powerbi.com/view?r=eyJrIjoiNmJmODk0MGUtNjVmNi00ZWYxLTg3NjgtOTQ5ZWFlYzFmYjJiIiwidCI6IjQ2YzUxNzhlLWEwZjQtNGY0ZC04YzQwLTk1OThlM2QxMTg2MCIsImMiOjN9>__
+- `View a map of the results <https://app.powerbi.com/view?r=eyJrIjoiNmJmODk0MGUtNjVmNi00ZWYxLTg3NjgtOTQ5ZWFlYzFmYjJiIiwidCI6IjQ2YzUxNzhlLWEwZjQtNGY0ZC04YzQwLTk1OThlM2QxMTg2MCIsImMiOjN9>`__
 
 Acknowledgements
 ----------------
