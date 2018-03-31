@@ -99,7 +99,7 @@ class Cfplot(object):
             Must be X_rank.
         how : string
             Name of method to analyze the data.
-            P0.01 : 0.01th percentile.
+            Percentile e.g. 'P0.1'
             
         Returns
         -------
@@ -140,7 +140,7 @@ class Cfplot(object):
             df[self.column].values
             
         # Create xr.Dataset to store the analysis with the number of athletes
-        _da = da[:,0]
+        _da = da[:,0].copy(deep=True)
         _da[:] = np.nan
         ds = xr.Dataset({'natheltes':_da, self.how:_da}).drop('athletes')
         
@@ -218,7 +218,7 @@ class Cfplot(object):
         print('Printing results in reddit table format...')
         print('Rank | Region | Number of athletes in region | '+\
               self.column+ ' '+self.how)
-        print('---- | ------ | ---------------------------- | --------------')
+        print('---- | ------ | ---------------------------- | ---------------')
         for i in range(0, len(ds_sorted.coords['regions'])):
             print(str(i+1)+' | '+ds_sorted.coords['regions'].values[i]+' | '+\
                   str(ds_sorted['natheltes'].values[i])+' | '+\
@@ -1142,7 +1142,7 @@ class Cfplot(object):
         colors = cm.nipy_spectral(np.linspace(0,1,len(ds['gyms'])))
         
         # Get google map. Scale is for more details. Mapytype can have
-        # terrain' or 'satellite'
+        # 'terrain' or 'satellite'
         g = GoogleVisibleMap(x=[extent[0], extent[1]], y=[extent[2],
                                 extent[3]], scale=4, maptype='terrain')
         ggl_img = g.get_vardata()
