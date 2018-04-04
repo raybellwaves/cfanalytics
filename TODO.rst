@@ -20,3 +20,4 @@ Analysis/plotting
 - Create distribution plots of scores using `seaborn <https://seaborn.pydata.org/>`__ as ``Cfplot(df).distplot(column=‘18.1_score’)``. I'm guessing the results will look like a `Rayleigh <https://en.wikipedia.org/wiki/Rayleigh_distribution>`__ distribution.
 - Create interactive plots of scores using `bokeh <https://bokeh.pydata.org/en/latest/>`__ / `holoviews <http://holoviews.org/>`__. Would be cool if could query for a person on the plot may not be possible.
 - Create u/alexenos's `plot <https://www.reddit.com/r/crossfit/comments/88l9up/regional_competitiveness_for_qualifying_athletes/>`__.
+- Create interactive spatial plots using `geoviews <http://geo.holoviews.org/>`__. e.g. for `regionplot` make the inputs wods and percentiles. 
