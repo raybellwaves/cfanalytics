@@ -51,7 +51,7 @@ As good practice, I recommend installing with anaconda/miniconda and in a new en
 You can type ``source deactivate`` when finished. You can also check which environments you have created by typing ``conda info --envs``. 
 To remove an environment type ``conda remove --name cfa --all``.
 
-Optional dependencies (fot plotting)
+Optional dependencies (for plotting)
 ------------------------------------
 
 - `matplotlib <https://github.com/matplotlib/matplotlib>`__
